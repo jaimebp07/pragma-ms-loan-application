@@ -1,4 +1,4 @@
-package co.com.crediya.model.loanaplication.loan;
+package co.com.crediya.model.loanaplication.loanAplication;
 
 import java.math.BigDecimal;
 
@@ -8,12 +8,14 @@ public class LoanAplication {
     private final BigDecimal amount;
     private final Integer term;
     private final LoanType loanType;
+    private final LoanAplicationStatus status;  
 
     private LoanAplication(Builder builder) {
         this.clientId = builder.clientId;
         this.amount = builder.amount;
         this.term = builder.term;
         this.loanType = builder.loanType;
+        this.status = builder.status;
     }
 
     public static class Builder {
@@ -21,6 +23,7 @@ public class LoanAplication {
         private BigDecimal amount;
         private Integer term;
         private LoanType loanType;
+        private LoanAplicationStatus status;
         
         public Builder clientId(String clientId) {
             this.clientId = clientId;
@@ -39,6 +42,11 @@ public class LoanAplication {
 
         public Builder loanType(LoanType loanType) {
             this.loanType = loanType;
+            return this;
+        }
+
+        public Builder status(LoanAplicationStatus status) {
+            this.status = status;
             return this;
         }
 
@@ -78,5 +86,9 @@ public class LoanAplication {
 
     public LoanType getLoanType() {
         return loanType;
+    }
+
+    public LoanAplicationStatus getStatus() {
+        return status;
     }
 }
