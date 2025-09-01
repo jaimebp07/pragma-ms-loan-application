@@ -4,9 +4,9 @@ import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
 
 public enum LoanAplicationStatus {
 
-    approved ("Approved"),
-    rejected ("Rejected"),
-    pending ("Pending");
+    APPROVED ("Approved"),
+    REJECTED ("Rejected"),
+    PENDING ("Pending");
 
     private final String description;
 

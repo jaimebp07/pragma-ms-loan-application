@@ -23,7 +23,7 @@ public class ApplyLoanUseCase {
 
     private LoanAplication withPendingStatus(LoanAplication loanAplication) {
         return loanAplication.toBuilder()
-                .status(LoanAplicationStatus.pending)
+                .status(LoanAplicationStatus.PENDING)
                 .build();
     }
 }
