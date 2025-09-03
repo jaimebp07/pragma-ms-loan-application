@@ -7,6 +7,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0"
+    
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     implementation "org.mapstruct:mapstruct:$mapstructVersion"
     annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 }

@@ -79,7 +79,15 @@ public class AuthorizationJwt implements WebFluxConfigurer {
     @Order(1)
     SecurityWebFilterChain publicApi(ServerHttpSecurity http) {
         return http
-            .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/api/v1/**"))
+            .securityMatcher(ServerWebExchangeMatchers.pathMatchers(
+                "/api/v1/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-resources/**",
+                "/webjars/**",
+                "/v3/api-docs/swagger-config"
+            ))
             .authorizeExchange(auth -> auth.anyExchange().permitAll())
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .build();
