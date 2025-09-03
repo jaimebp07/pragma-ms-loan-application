@@ -34,8 +34,17 @@ cors:
 adapters:
   r2dbc:
     host: localhost
-    port: 5434
+    port: 5435
     database: loan_applications_db
     schema: credi_ya
     username: myuser
     password: mypassword
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    reactor.netty: INFO
+    co.com.crediya: DEBUG
+  pattern:
+    console: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"

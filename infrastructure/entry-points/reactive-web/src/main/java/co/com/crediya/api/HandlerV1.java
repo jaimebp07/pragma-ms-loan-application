@@ -25,7 +25,7 @@ public class HandlerV1 {
     private  final ApplyLoanUseCase applyLoanUseCase;
     private final LoanAplicationMapper loanAplicationMapper;
 
-    @PreAuthorize("hasRole('permissionGET')")
+    //@PreAuthorize("hasRole('permissionGET')")
     public Mono<ServerResponse> applyLoan(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(LoanAplicationDTO.class)
         .doOnNext(dto -> log.info("📥 Loan Aplication, Request received: {}", dto))
@@ -49,7 +49,7 @@ public class HandlerV1 {
                         log.error("💥 Loan Aplication, Unexpected error: ", ex);
                         return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(new ErrorResponse("INTERNAL_ERROR", "Unexpected error occurred"));
+                                .bodyValue(new ErrorResponse("INTERNAL_ERROR", ex.getMessage()));
                         }
                 );
 

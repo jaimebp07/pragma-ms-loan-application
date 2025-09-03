@@ -12,7 +12,7 @@ import co.com.crediya.model.loanaplication.loanAplication.LoanType;
 import lombok.Data;
 
 @Data
-@Table("credi_ya.loan_aplications")
+@Table("credi_ya.loan_applications")
 public class LoanAplicationEntity {
 
     @Id

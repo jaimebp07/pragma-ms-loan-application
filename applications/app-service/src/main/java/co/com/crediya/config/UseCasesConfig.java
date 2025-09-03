@@ -10,7 +10,7 @@ import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 public class UseCasesConfig {
         
         @Bean
-        ApplyLoanUseCase registerUserUseCase(LoanAplicationRepository loanApplicationRepository) {
+        ApplyLoanUseCase applyLoanUseCase(LoanAplicationRepository loanApplicationRepository) {
                 return new ApplyLoanUseCase(loanApplicationRepository);
         }
 }

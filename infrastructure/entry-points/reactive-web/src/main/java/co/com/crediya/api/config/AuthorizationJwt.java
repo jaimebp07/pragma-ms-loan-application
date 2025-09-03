@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import reactor.core.publisher.Mono;
 
@@ -53,10 +55,15 @@ public class AuthorizationJwt implements WebFluxConfigurer {
         this.mapper = mapper;
     }
 
+    /* 
     @Bean
-    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
+    SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
         http
-            .authorizeExchange(authorize -> authorize.anyExchange().authenticated())
+            //.authorizeExchange(authorize -> authorize.anyExchange().authenticated())
+            .authorizeExchange(auth -> auth
+                .pathMatchers("/api/v1/**").permitAll()  // permite sin token
+                .anyExchange().authenticated()
+            )
             .oauth2ResourceServer(oauth2 ->
                     oauth2.jwt(jwtSpec ->
                             jwtSpec
@@ -65,6 +72,32 @@ public class AuthorizationJwt implements WebFluxConfigurer {
                     )
             );
         return http.build();
+    }
+    */
+
+    @Bean
+    @Order(1)
+    SecurityWebFilterChain publicApi(ServerHttpSecurity http) {
+        return http
+            .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/api/v1/**"))
+            .authorizeExchange(auth -> auth.anyExchange().permitAll())
+            .csrf(ServerHttpSecurity.CsrfSpec::disable)
+            .build();
+    }
+
+    @Bean
+    @Order(2)
+    SecurityWebFilterChain securedApi(ServerHttpSecurity http) {
+        return http
+            .authorizeExchange(auth -> auth.anyExchange().authenticated())
+            .oauth2ResourceServer(oauth2 ->
+                oauth2.jwt(jwtSpec ->
+                    jwtSpec
+                        .jwtDecoder(jwtDecoder())
+                        .jwtAuthenticationConverter(grantedAuthoritiesExtractor())
+                )
+            )
+            .build();
     }
 
     public ReactiveJwtDecoder jwtDecoder() {
