@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  postgresql: # Host name/address, pgadmin connection # select * from credi_ya.users;
+    image: postgres:16.1
+    container_name: crediya_loan_aplications_db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser # Username, pgadmin connection
+      POSTGRES_PASSWORD: mypassword # Password, pgadmin connection
+      POSTGRES_DB: loan_aplications_db
+    ports:
+      - "5435:5432" # Port 5432, pgadmin connection
+    volumes:
+      - ./sql/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql
+      - ./sql/data.sql:/docker-entrypoint-initdb.d/data.sql
+
+  pgadmin:
+      image: dpage/pgadmin4
+      environment: 
+        PGADMIN_DEFAULT_EMAIL: 'admin@admin.com'
+        PGADMIN_DEFAULT_PASSWORD: 'admin'
+      ports:
+        - '82:80' # Port 80, web browser access http://localhost:81
+      depends_on:
+        - postgresql  

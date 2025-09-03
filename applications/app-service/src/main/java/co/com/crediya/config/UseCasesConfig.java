@@ -1,14 +1,16 @@
 package co.com.crediya.config;
 
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
+
+import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
+import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 
 @Configuration
-@ComponentScan(basePackages = "co.com.crediya.usecase",
-        includeFilters = {
-                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "^.+UseCase$")
-        },
-        useDefaultFilters = false)
 public class UseCasesConfig {
+        
+        @Bean
+        ApplyLoanUseCase registerUserUseCase(LoanAplicationRepository loanApplicationRepository) {
+                return new ApplyLoanUseCase(loanApplicationRepository);
+        }
 }

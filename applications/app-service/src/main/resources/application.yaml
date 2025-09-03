@@ -30,3 +30,12 @@ management:
         enabled: true
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+
+adapters:
+  r2dbc:
+    host: localhost
+    port: 5434
+    database: loan_applications_db
+    schema: credi_ya
+    username: myuser
+    password: mypassword

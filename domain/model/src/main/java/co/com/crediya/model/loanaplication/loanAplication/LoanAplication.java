@@ -1,9 +1,11 @@
 package co.com.crediya.model.loanaplication.loanAplication;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class LoanAplication {
 
+    private final UUID id;
     private final String clientId;
     private final BigDecimal amount;
     private final Integer term;
@@ -11,6 +13,7 @@ public class LoanAplication {
     private final LoanAplicationStatus status;  
 
     private LoanAplication(Builder builder) {
+        this.id = builder.id;
         this.clientId = builder.clientId;
         this.amount = builder.amount;
         this.term = builder.term;
@@ -19,12 +22,17 @@ public class LoanAplication {
     }
 
     public static class Builder {
+        private UUID id;
         private String clientId;
         private BigDecimal amount;
         private Integer term;
         private LoanType loanType;
         private LoanAplicationStatus status;
         
+        public Builder id(UUID id) {
+            this.id = id; return this;
+        }
+
         public Builder clientId(String clientId) {
             this.clientId = clientId;
             return this;
@@ -57,19 +65,16 @@ public class LoanAplication {
 
     public Builder toBuilder() {
         return new Builder()
+                .id(this.id)
                 .clientId(this.clientId)
                 .amount(this.amount)
                 .term(this.term)
-                .loanType(this.loanType);
+                .loanType(this.loanType)
+                .status(this.status);
     } 
-    
-    public static LoanType fromString(String value) {
-        for (LoanType type : LoanType.values()) {
-            if (type.name().equalsIgnoreCase(value) || type.getDescription().equalsIgnoreCase(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("No enum constant for value: " + value);
+
+    public UUID getId() {
+        return id;
     }
 
     public String getClientId() {
