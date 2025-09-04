@@ -1,13 +1,14 @@
 version: '3.8'
+name: crediya_loan_applications
 services:
-  postgresql: # Host name/address, pgadmin connection # select * from credi_ya.loan_applications;
+  loanaplications: # Host name/address, pgadmin connection # select * from credi_ya.loan_applications;
     image: postgres:16.1
     container_name: crediya_loan_aplications_db
     restart: always
     environment:
-      POSTGRES_USER: myuser # Username, pgadmin connection
-      POSTGRES_PASSWORD: mypassword # Password, pgadmin connection
-      POSTGRES_DB: loan_applications_db # Maintenance database, pgadmin connection
+      POSTGRES_USER: admin # Username, pgadmin connection
+      POSTGRES_PASSWORD: loanaplications # Password, pgadmin connection
+      POSTGRES_DB: postgres # Maintenance database, pgadmin connection
     ports:
       - "5435:5432" # Port 5432 pgadmin connection, localhost:5435
     volumes:
@@ -22,4 +23,4 @@ services:
       ports:
         - '82:80' # Port 82, web browser access http://localhost:81
       depends_on:
-        - postgresql  
+        - loanaplications  

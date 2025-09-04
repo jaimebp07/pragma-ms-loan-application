@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8082
 spring:
   application:
     name: "LoanApplication"
@@ -29,16 +29,16 @@ management:
       probes:
         enabled: true
 cors:
-  allowed-origins: "http://localhost:4200,http://localhost:8080"
+  allowed-origins: "http://localhost:4200,http://localhost:8082"
 
 adapters:
   r2dbc:
     host: localhost
     port: 5435
-    database: loan_applications_db
+    database: postgres
     schema: credi_ya
-    username: myuser
-    password: mypassword
+    username: admin
+    password: loanaplications
 
 logging:
   level:

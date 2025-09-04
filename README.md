@@ -47,12 +47,12 @@ Este m�dulo es el m�s externo de la arquitectura, es el encargado de ensambl
 **Los beans de los casos de uso se disponibilizan automaticamente gracias a un '@ComponentScan' ubicado en esta capa.**
 
 ## Swagger
-* Para acceder a swagger UI puede utilizar el siguiente link  desde su navegador [http://localhost:8080/webjars/swagger-ui/index.html](http://localhost:8080/webjars/swagger-ui/index.html)
+* Para acceder a swagger UI puede utilizar el siguiente link  desde su navegador [http://localhost:8082/webjars/swagger-ui/index.html](http://localhost:8082/webjars/swagger-ui/index.html)
 * Usuario de prueba
     ```json
     {
         "clientId": "72742384904",
-        "amount": 10,
+        "amount": 10500100,
         "term": 10,
         "loanType": "PERSONAL" 
     }
