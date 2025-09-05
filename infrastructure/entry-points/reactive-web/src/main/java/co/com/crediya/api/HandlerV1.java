@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import co.com.crediya.api.dto.LoanAplicationDTO;
+import co.com.crediya.api.dto.ApplyLoanRqDTO;
 import co.com.crediya.api.mapper.LoanAplicationMapper;
 import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -27,14 +27,15 @@ public class HandlerV1 {
 
     //@PreAuthorize("hasRole('permissionGET')")
     public Mono<ServerResponse> applyLoan(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(LoanAplicationDTO.class)
+        return serverRequest.bodyToMono(ApplyLoanRqDTO.class)
         .doOnNext(dto -> log.info("📥 Loan Aplication, Request received: {}", dto))
         .map(loanAplicationMapper::toDomain)
         .flatMap(applyLoanUseCase::applyLoan)
-        .map(loanAplicationMapper::toDTO)
-        .flatMap(loanAplicationDTO -> ServerResponse
+        .map(loanAplicationMapper::toResponse)
+        .doOnNext(dto -> log.info("📤 Loan Aplication, Domain processed: {}", dto))
+        .flatMap(applyLoanRsDTO -> ServerResponse
             .created(serverRequest.uri())
-            .bodyValue(loanAplicationDTO)
+            .bodyValue(applyLoanRsDTO)
         )
         .doOnSuccess(resp -> log.info("✅ Loan Aplication, Response  created successfully"))
         .doOnError(error -> log.error("❌ Loan Aplication, Error occurred: {}", error.getMessage()))

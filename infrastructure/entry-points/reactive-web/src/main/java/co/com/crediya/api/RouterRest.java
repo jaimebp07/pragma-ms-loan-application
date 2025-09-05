@@ -7,7 +7,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import co.com.crediya.api.dto.LoanAplicationDTO;
+import co.com.crediya.api.dto.ApplyLoanRqDTO;
+import co.com.crediya.api.dto.ApplyLoanRsDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,14 +38,14 @@ public class RouterRest {
                     description = "Loan application details",
                     content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = LoanAplicationDTO.class)
+                        schema = @Schema(implementation = ApplyLoanRqDTO.class)
                     )
                 ),
                 responses = {
                     @ApiResponse(
                         responseCode = "201",
                         description = "Request created successfully",
-                        content = @Content(schema = @Schema(implementation = LoanAplicationDTO.class))
+                        content = @Content(schema = @Schema(implementation = ApplyLoanRsDTO.class))
                     ),
                     @ApiResponse(
                         responseCode = "400",

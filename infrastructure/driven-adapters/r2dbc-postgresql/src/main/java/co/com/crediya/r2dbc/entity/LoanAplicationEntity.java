@@ -20,7 +20,7 @@ public class LoanAplicationEntity {
     private UUID id;
 
     @Column("client_id")
-    private String clientId;
+    private UUID clientId;
 
     @Column("amount")
     private BigDecimal amount;

@@ -17,6 +17,10 @@ spring:
         jwt:
           issuer-uri: "https://idp.example.com/issuer"
           client-id: "myclientid"
+  webclient:
+    users:
+      base-url: http://localhost:8082/api/v1/usuarios
+
 jwt:
   json-exp-roles: "/roles"
 management:
@@ -28,23 +32,41 @@ management:
     health:
       probes:
         enabled: true
+  health:
+    circuitbreakers:
+      enabled: true
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8082"
-
 adapters:
   r2dbc:
-    host: localhost
+    host: "localhost"
     port: 5435
-    database: postgres
-    schema: credi_ya
-    username: admin
-    password: loanaplications
-
+    database: "postgres"
+    schema: "credi_ya"
+    username: "admin"
+    password: "loanaplications"
 logging:
   level:
-    root: INFO
-    org.springframework: INFO
-    reactor.netty: INFO
-    co.com.crediya: DEBUG
+    root: "INFO"
+    org.springframework: "INFO"
+    reactor.netty: "INFO"
+    co.com.crediya: "DEBUG"
   pattern:
     console: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+adapter:
+  restconsumer:
+    timeout: 5000
+    url: "http://localhost:8080"
+    
+resilience4j:
+  circuitbreaker:
+    instances:
+      clientService:   # 👈 este debe coincidir con el "name" en tu @CircuitBreaker
+        registerHealthIndicator: true
+        failureRateThreshold: 50           # % de fallos permitido
+        slowCallRateThreshold: 50          # % de llamadas lentas permitido
+        slowCallDurationThreshold: 2s      # llamadas >2s se consideran lentas
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10              # ventana de 10 llamadas
+        minimumNumberOfCalls: 5            # no activa hasta mínimo 5 llamadas
+        waitDurationInOpenState: 10s 

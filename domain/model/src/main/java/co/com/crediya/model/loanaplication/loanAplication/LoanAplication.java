@@ -6,7 +6,7 @@ import java.util.UUID;
 public class LoanAplication {
 
     private final UUID id;
-    private final String clientId;
+    private final UUID clientId;
     private final BigDecimal amount;
     private final Integer term;
     private final LoanType loanType;
@@ -23,7 +23,7 @@ public class LoanAplication {
 
     public static class Builder {
         private UUID id;
-        private String clientId;
+        private UUID clientId;
         private BigDecimal amount;
         private Integer term;
         private LoanType loanType;
@@ -33,7 +33,7 @@ public class LoanAplication {
             this.id = id; return this;
         }
 
-        public Builder clientId(String clientId) {
+        public Builder clientId(UUID clientId) {
             this.clientId = clientId;
             return this;
         }
@@ -77,7 +77,7 @@ public class LoanAplication {
         return id;
     }
 
-    public String getClientId() {
+    public UUID getClientId() {
         return clientId;
     }
 

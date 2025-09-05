@@ -13,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import co.com.crediya.api.dto.LoanAplicationDTO;
+import co.com.crediya.api.dto.ApplyLoanRqDTO;
 import co.com.crediya.api.mapper.LoanAplicationMapper;
 import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
 import co.com.crediya.model.loanaplication.loanAplication.LoanType;
@@ -40,17 +40,17 @@ class RouterRestTest {
     @Test
     void testApplyLoanSuccess() {
 
-        LoanAplicationDTO requestDto = new LoanAplicationDTO("client123", 
+        ApplyLoanRqDTO requestDto = new ApplyLoanRqDTO(UUID.fromString("47d3808b-fdc3-4d56-84f3-48691fecbd10"), 
                 java.math.BigDecimal.valueOf(1000), 12, null);
 
         LoanAplication domain = new LoanAplication.Builder()
         .id(UUID.randomUUID())
-        .clientId("client123")
+        .clientId(UUID.fromString("47d3808b-fdc3-4d56-84f3-48691fecbd10"))
         .amount(BigDecimal.valueOf(1000))
         .term(12)
         .loanType(LoanType.AUTO)
         .build();
-        LoanAplicationDTO responseDto = requestDto;
+        ApplyLoanRqDTO responseDto = requestDto;
 
         when(loanAplicationMapper.toDomain(requestDto)).thenReturn(domain);
         when(applyLoanUseCase.applyLoan(domain)).thenReturn(Mono.just(domain));
@@ -62,7 +62,7 @@ class RouterRestTest {
                 .bodyValue(requestDto)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectBody(LoanAplicationDTO.class)
+                .expectBody(ApplyLoanRqDTO.class)
                 .isEqualTo(responseDto);
     }
 }
