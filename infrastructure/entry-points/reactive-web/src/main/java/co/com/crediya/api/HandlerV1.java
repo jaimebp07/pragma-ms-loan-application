@@ -28,26 +28,26 @@ public class HandlerV1 {
     //@PreAuthorize("hasRole('permissionGET')")
     public Mono<ServerResponse> applyLoan(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(ApplyLoanRqDTO.class)
-        .doOnNext(dto -> log.info("📥 Loan Aplication, Request received: {}", dto))
+        .doOnNext(dto -> log.info("Loan Aplication, Request received: {}", dto))
         .map(loanAplicationMapper::toDomain)
         .flatMap(applyLoanUseCase::applyLoan)
         .map(loanAplicationMapper::toResponse)
-        .doOnNext(dto -> log.info("📤 Loan Aplication, Domain processed: {}", dto))
+        .doOnNext(dto -> log.info("Loan Aplication, Domain processed: {}", dto))
         .flatMap(applyLoanRsDTO -> ServerResponse
             .created(serverRequest.uri())
             .bodyValue(applyLoanRsDTO)
         )
-        .doOnSuccess(resp -> log.info("✅ Loan Aplication, Response  created successfully"))
-        .doOnError(error -> log.error("❌ Loan Aplication, Error occurred: {}", error.getMessage()))
+        .doOnSuccess(resp -> log.info("Loan Aplication, Response  created successfully"))
+        .doOnError(error -> log.error("Loan Aplication, Error occurred: {}", error.getMessage()))
         .onErrorResume(BusinessException.class, ex -> {
-                        log.warn("⚠️ Loan Aplication,  business mistake: {}", ex.getMessage());
+                        log.warn("Loan Aplication,  business mistake: {}", ex.getMessage());
                         return ServerResponse.status(HttpStatus.BAD_REQUEST)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(new ErrorResponse("BUSINESS_ERROR", ex.getMessage()));
                         }
                 )
                 .onErrorResume(Exception.class, ex -> {
-                        log.error("💥 Loan Aplication, Unexpected error: ", ex);
+                        log.error("Loan Aplication, Unexpected error: ", ex);
                         return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(new ErrorResponse("INTERNAL_ERROR", ex.getMessage()));

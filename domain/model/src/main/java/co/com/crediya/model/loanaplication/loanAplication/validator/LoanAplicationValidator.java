@@ -10,6 +10,9 @@ import co.com.crediya.model.loanaplication.loanAplication.LoanType;
 public class LoanAplicationValidator {
 
     public static void validate(LoanAplication loanAplication) {
+        if (loanAplication.getLoanType() == null) {
+            throw new BusinessException(ErrorCode.INVALID_ARGUMENT, "Loan type is required");
+        }
         if (loanAplication.getClientId() == null || loanAplication.getClientId().toString().isEmpty()) {
             throw new BusinessException(ErrorCode.VALUE_REQUIRED, "Customer ID is required");
         }

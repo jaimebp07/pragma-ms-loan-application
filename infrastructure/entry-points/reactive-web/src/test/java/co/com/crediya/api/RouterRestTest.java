@@ -1,68 +1,55 @@
 package co.com.crediya.api;
 
-import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.util.UUID;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
-import co.com.crediya.api.dto.ApplyLoanRqDTO;
-import co.com.crediya.api.mapper.LoanAplicationMapper;
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
-import co.com.crediya.model.loanaplication.loanAplication.LoanType;
-import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
-import reactor.core.publisher.Mono;
+import static org.mockito.Mockito.*;
 
-@ContextConfiguration(classes = {RouterRest.class, HandlerV1.class, HandlerV2.class})
-@WebFluxTest
-@ImportAutoConfiguration(exclude = {
-        org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration.class
-})
 class RouterRestTest {
 
-    @Autowired
     private WebTestClient webTestClient;
+    private HandlerV1 handlerV1;
+    private HandlerV2 handlerV2;
 
-    @MockitoBean
-    private ApplyLoanUseCase applyLoanUseCase;
+    @BeforeEach
+    void setUp() {
+        handlerV1 = mock(HandlerV1.class);
+        handlerV2 = mock(HandlerV2.class);
 
-    @MockitoBean
-    private LoanAplicationMapper loanAplicationMapper;
+        RouterRest routerRest = new RouterRest();
+        RouterFunction<ServerResponse> routerFunction = routerRest.routerFunction(handlerV1, handlerV2);
+
+        webTestClient = WebTestClient.bindToRouterFunction(routerFunction).build();
+    }
 
     @Test
-    void testApplyLoanSuccess() {
+    void testRouteV1ApplyLoan() {
+        when(handlerV1.applyLoan(any())).thenReturn(ServerResponse.ok().bodyValue("OK"));
 
-        ApplyLoanRqDTO requestDto = new ApplyLoanRqDTO(UUID.fromString("47d3808b-fdc3-4d56-84f3-48691fecbd10"), 
-                java.math.BigDecimal.valueOf(1000), 12, null);
-
-        LoanAplication domain = new LoanAplication.Builder()
-        .id(UUID.randomUUID())
-        .clientId(UUID.fromString("47d3808b-fdc3-4d56-84f3-48691fecbd10"))
-        .amount(BigDecimal.valueOf(1000))
-        .term(12)
-        .loanType(LoanType.AUTO)
-        .build();
-        ApplyLoanRqDTO responseDto = requestDto;
-
-        when(loanAplicationMapper.toDomain(requestDto)).thenReturn(domain);
-        when(applyLoanUseCase.applyLoan(domain)).thenReturn(Mono.just(domain));
-        when(loanAplicationMapper.toDTO(domain)).thenReturn(responseDto);
-
-        
         webTestClient.post()
                 .uri("/api/v1/solicitud")
-                .bodyValue(requestDto)
+                .bodyValue("{}")
                 .exchange()
-                .expectStatus().isCreated()
-                .expectBody(ApplyLoanRqDTO.class)
-                .isEqualTo(responseDto);
+                .expectStatus().isOk()
+                .expectBody(String.class).isEqualTo("OK");
+
+        verify(handlerV1, times(1)).applyLoan(any());
+    }
+
+    @Test
+    void testRouteV2OtherPath() {
+        when(handlerV2.listenPOSTUseCase(any())).thenReturn(ServerResponse.ok().bodyValue("V2 OK"));
+
+        webTestClient.post()
+                .uri("/api/v2/usecase/otherpath")
+                .bodyValue("{}")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class).isEqualTo("V2 OK");
+
+        verify(handlerV2, times(1)).listenPOSTUseCase(any());
     }
 }

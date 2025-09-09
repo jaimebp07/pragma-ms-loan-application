@@ -2,6 +2,8 @@ package co.com.crediya.usecase.applyloan;
 
 
 import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
+import co.com.crediya.model.loanaplication.ecxeptions.ErrorCode;
+import co.com.crediya.model.loanaplication.gateways.ClientRepository;
 import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
 import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
 import co.com.crediya.model.loanaplication.loanAplication.LoanAplicationStatus;
@@ -20,72 +22,78 @@ import static org.mockito.Mockito.*;
 
 public class ApplyLoanUseCaseTest {
     
-    private LoanAplicationRepository loanAplicationRepository;
-    private ApplyLoanUseCase applyLoanUseCase;
+        private LoanAplicationRepository loanAplicationRepository;
+        private ApplyLoanUseCase applyLoanUseCase;
+        private ClientRepository clientRepository;
 
-    @BeforeEach
-    void setUp() {
-        loanAplicationRepository = Mockito.mock(LoanAplicationRepository.class);
-        applyLoanUseCase = new ApplyLoanUseCase(loanAplicationRepository);
-    }
+        @BeforeEach
+        void setUp() {
+                loanAplicationRepository = Mockito.mock(LoanAplicationRepository.class);
+                clientRepository = Mockito.mock(ClientRepository.class);
+                applyLoanUseCase = new ApplyLoanUseCase(loanAplicationRepository, clientRepository);
 
-    private LoanAplication buildLoanAplication() {
-        return new LoanAplication.Builder()
-                .id(UUID.randomUUID())
-                .clientId("client-123")
-                .amount(BigDecimal.valueOf(5000))
-                .term(12)
-                .loanType(LoanType.PERSONAL)
-                .status(LoanAplicationStatus.APPROVED) // será sobrescrito a PENDING
-                .build();
-    }
+                when(clientRepository.existsById(any(UUID.class))).thenReturn(Mono.just(true));
+        }
 
-    @Test
-    void shouldApplyLoanSuccessfully() {
-        LoanAplication input = buildLoanAplication();
+        private LoanAplication buildLoanAplication() {
+                return new LoanAplication.Builder()
+                        .id(UUID.randomUUID())
+                        .clientId(UUID.randomUUID())
+                        .amount(BigDecimal.valueOf(5000))
+                        .term(12)
+                        .loanType(LoanType.PERSONAL)
+                        .status(LoanAplicationStatus.APPROVED) // será sobrescrito a PENDING
+                        .build();
+        }
 
-        when(loanAplicationRepository.applyLoan(any(LoanAplication.class)))
-                .thenAnswer(inv -> Mono.just(inv.getArgument(0)));
+        @Test
+        void shouldApplyLoanSuccessfully() {
+                LoanAplication input = buildLoanAplication();
 
-        StepVerifier.create(applyLoanUseCase.applyLoan(input))
-                .expectNextMatches(loan ->
-                        loan.getStatus() == LoanAplicationStatus.PENDING &&
-                        loan.getClientId().equals("client-123") &&
-                        loan.getAmount().equals(BigDecimal.valueOf(5000)))
-                .verifyComplete();
+                when(loanAplicationRepository.applyLoan(any(LoanAplication.class)))
+                        .thenAnswer(inv -> Mono.just(inv.getArgument(0)));
 
-        verify(loanAplicationRepository, times(1)).applyLoan(any(LoanAplication.class));
-    }
+                UUID expectedClientId = input.getClientId();
 
-    @Test
-    void shouldMapDatabaseErrorToBusinessException() {
-        LoanAplication input = buildLoanAplication();
+                StepVerifier.create(applyLoanUseCase.applyLoan(input))
+                        .expectNextMatches(loan ->
+                                loan.getStatus() == LoanAplicationStatus.PENDING &&
+                                loan.getClientId().equals(expectedClientId) &&
+                                loan.getAmount().equals(BigDecimal.valueOf(5000)))
+                        .verifyComplete();
 
-        when(loanAplicationRepository.applyLoan(any(LoanAplication.class)))
-                .thenReturn(Mono.error(new RuntimeException("R2DBC connection failed")));
+                verify(loanAplicationRepository, times(1)).applyLoan(any(LoanAplication.class));
+        }
 
-        StepVerifier.create(applyLoanUseCase.applyLoan(input))
-                .expectErrorMatches(ex ->
-                        ex instanceof BusinessException &&
-                        ((BusinessException) ex).getErrorCode().equals("DB_CONNECTION_ERROR"))
-                .verify();
+        @Test
+        void shouldMapDatabaseErrorToBusinessException() {
+                LoanAplication input = buildLoanAplication();
 
-        verify(loanAplicationRepository, times(1)).applyLoan(any(LoanAplication.class));
-    }
+                when(loanAplicationRepository.applyLoan(any(LoanAplication.class)))
+                        .thenReturn(Mono.error(new RuntimeException("R2DBC connection failed")));
 
-    @Test
-    void shouldMapUnexpectedErrorToBusinessException() {
-        LoanAplication input = buildLoanAplication();
+                StepVerifier.create(applyLoanUseCase.applyLoan(input))
+                        .expectErrorMatches(ex ->
+                                ex instanceof BusinessException &&
+                                ((BusinessException) ex).getErrorCode() == ErrorCode.DB_ERROR)
+                        .verify();
 
-        when(loanAplicationRepository.applyLoan(any(LoanAplication.class)))
-                .thenReturn(Mono.error(new RuntimeException("Some other error")));
+                verify(loanAplicationRepository, times(1)).applyLoan(any(LoanAplication.class));
+        }
 
-        StepVerifier.create(applyLoanUseCase.applyLoan(input))
-                .expectErrorMatches(ex ->
-                        ex instanceof BusinessException &&
-                        ((BusinessException) ex).getErrorCode().equals("UNEXPECTED_ERROR"))
-                .verify();
+        @Test
+        void shouldMapUnexpectedErrorToBusinessException() {
+                LoanAplication input = buildLoanAplication();
 
-        verify(loanAplicationRepository, times(1)).applyLoan(any(LoanAplication.class));
-    }
+                when(loanAplicationRepository.applyLoan(any(LoanAplication.class)))
+                        .thenReturn(Mono.error(new RuntimeException("Some other error")));
+
+                StepVerifier.create(applyLoanUseCase.applyLoan(input))
+                        .expectErrorMatches(ex ->
+                                ex instanceof BusinessException &&
+                                ((BusinessException) ex).getErrorCode() == ErrorCode.UNEXPECTED_ERROR)
+                        .verify();
+
+                verify(loanAplicationRepository, times(1)).applyLoan(any(LoanAplication.class));
+        }
 }
