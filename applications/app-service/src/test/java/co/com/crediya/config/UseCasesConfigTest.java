@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import co.com.crediya.model.loanaplication.gateways.ClientRepository;
 import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,6 +38,11 @@ public class UseCasesConfigTest {
         @Bean
         LoanAplicationRepository loanAplicationRepository() {
             return Mockito.mock(LoanAplicationRepository.class);
+        }
+
+        @Bean
+        ClientRepository clientRepository() {
+            return Mockito.mock(ClientRepository.class);
         }
 
         @Bean

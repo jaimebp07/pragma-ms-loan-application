@@ -61,7 +61,7 @@ adapter:
 resilience4j:
   circuitbreaker:
     instances:
-      clientService:   # 👈 este debe coincidir con el "name" en tu @CircuitBreaker
+      clientService:   # 👈 este debe coincidir con el "name" en  @CircuitBreaker
         registerHealthIndicator: true
         failureRateThreshold: 50           # % de fallos permitido
         slowCallRateThreshold: 50          # % de llamadas lentas permitido
