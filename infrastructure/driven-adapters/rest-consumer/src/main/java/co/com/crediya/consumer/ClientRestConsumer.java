@@ -25,7 +25,7 @@ public class ClientRestConsumer implements ClientRepository {
     public Mono<Boolean> existsById(UUID clientId) {
         log.info("Consulting client existence with id={}", clientId);
         return client.get()
-                .uri("/api/v1/usuarios/{id}", clientId)
+                .uri("/api/v1/usuarios/{id}/exists", clientId)
                 .exchangeToMono(resp -> {
                     return handleUserExistsResponse(resp);
                 });

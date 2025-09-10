@@ -14,6 +14,8 @@ import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 //import org.springframework.security.access.prepost.PreAuthorize;
 import reactor.core.publisher.Mono;
 
@@ -25,7 +27,7 @@ public class HandlerV1 {
     private  final ApplyLoanUseCase applyLoanUseCase;
     private final LoanAplicationMapper loanAplicationMapper;
 
-    //@PreAuthorize("hasRole('permissionGET')")
+    @PreAuthorize("hasRole('CLIENT')")
     public Mono<ServerResponse> applyLoan(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(ApplyLoanRqDTO.class)
         .doOnNext(dto -> log.info("Loan Aplication, Request received: {}", dto))

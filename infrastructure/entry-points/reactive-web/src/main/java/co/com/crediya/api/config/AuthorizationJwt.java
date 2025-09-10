@@ -26,9 +26,14 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
+import io.jsonwebtoken.security.Keys;
+
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -37,15 +42,19 @@ import lombok.extern.log4j.Log4j2;
 @EnableReactiveMethodSecurity
 public class AuthorizationJwt implements WebFluxConfigurer {
 
-    private final String issuerUri;
+    @Value("${jwt.secret}")
+    private String secret;
+
+
+    /*private final String issuerUri;
     private final String clientId;
     private final String jsonExpRoles;
 
-    private final ObjectMapper mapper;
+    private final ObjectMapper mapper;*/
     private static final String ROLE = "ROLE_";
     private static final String AZP = "azp";
 
-    public AuthorizationJwt(@Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri,
+    /*public AuthorizationJwt(@Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri,
                          @Value("${spring.security.oauth2.resourceserver.jwt.client-id}") String clientId,
                          @Value("${jwt.json-exp-roles}") String jsonExpRoles,
                          ObjectMapper mapper) {
@@ -53,7 +62,7 @@ public class AuthorizationJwt implements WebFluxConfigurer {
         this.clientId = clientId;
         this.jsonExpRoles = jsonExpRoles;
         this.mapper = mapper;
-    }
+    }*/
 
     /* 
     @Bean
@@ -80,7 +89,6 @@ public class AuthorizationJwt implements WebFluxConfigurer {
     SecurityWebFilterChain publicApi(ServerHttpSecurity http) {
         return http
             .securityMatcher(ServerWebExchangeMatchers.pathMatchers(
-                "/api/v1/**",
                 "/swagger-ui.html",
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
@@ -108,40 +116,27 @@ public class AuthorizationJwt implements WebFluxConfigurer {
             .build();
     }
 
+    @Bean
     public ReactiveJwtDecoder jwtDecoder() {
-        var defaultValidator = JwtValidators.createDefaultWithIssuer(issuerUri);
-        var audienceValidator = new JwtClaimValidator<String>(AZP,
-                azp -> azp != null && !azp.isEmpty() && azp.equals(clientId));
-        var tokenValidator = new DelegatingOAuth2TokenValidator<>(defaultValidator, audienceValidator);
-        var jwtDecoder = NimbusReactiveJwtDecoder
-                .withIssuerLocation(issuerUri)
-                .build();
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+       NimbusReactiveJwtDecoder decoder = NimbusReactiveJwtDecoder.withSecretKey(key).build();
+        decoder.setJwtValidator(JwtValidators.createDefault());
 
-        jwtDecoder.setJwtValidator(tokenValidator);
-        return jwtDecoder;
+        return decoder;
     }
+    
 
-    public Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {
+    // 🔑 Convierte el claim "roles" en autoridades de Spring Security
+    private Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {
         var jwtConverter = new JwtAuthenticationConverter();
-        jwtConverter.setJwtGrantedAuthoritiesConverter(jwt ->
-                getRoles(jwt.getClaims(), jsonExpRoles)
-                .stream()
-                .map(ROLE::concat)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList()));
+        jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            List<String> roles = jwt.getClaimAsStringList("roles");
+            if (roles == null) roles = List.of();
+            return roles.stream()
+                    .map(ROLE::concat)
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        });
         return new ReactiveJwtAuthenticationConverterAdapter(jwtConverter);
-    }
-
-    private List<String> getRoles(Map<String, Object> claims, String jsonExpClaim){
-        List<String> roles = List.of();
-        try {
-            var json = mapper.writeValueAsString(claims);
-            var chunk = mapper.readTree(json).at(jsonExpClaim);
-            return mapper.readerFor(new TypeReference<List<String>>() {})
-                    .readValue(chunk);
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return roles;
-        }
     }
 }

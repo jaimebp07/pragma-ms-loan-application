@@ -10,7 +10,6 @@ import co.com.crediya.model.loanaplication.loanAplication.LoanType;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;

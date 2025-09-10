@@ -11,18 +11,20 @@ spring:
       path: "/h2"
   profiles:
     include: null
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: "https://idp.example.com/issuer"
-          client-id: "myclientid"
+  #security:
+ #   oauth2:
+  #    resourceserver:
+  #      jwt:
+  #        #issuer-uri: "https://idp.example.com/issuer"
+          
   webclient:
     users:
       base-url: http://localhost:8082/api/v1/usuarios
 
 jwt:
   json-exp-roles: "/roles"
+  secret: "miClaveSuperSecretaConAlMenos32Caracteres123!"
+  expiration: 3600 
 management:
   endpoints:
     web:
@@ -51,6 +53,8 @@ logging:
     org.springframework: "INFO"
     reactor.netty: "INFO"
     co.com.crediya: "DEBUG"
+    org.springframework.security: DEBUG
+    org.springframework.security.web.server: DEBUG
   pattern:
     console: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
 adapter:
