@@ -7,6 +7,9 @@ buildscript {
 		pitestVersion = '1.19.0-rc.1'
         lombokVersion = '1.18.38'
         mapstructVersion = '1.5.5.Final'
+        jjwtApiVersion = '0.12.3'
+        jjwtImplVersion ='0.12.3'
+        jjwtJacksonVersion ='0.12.3'
 	}
 }
 
