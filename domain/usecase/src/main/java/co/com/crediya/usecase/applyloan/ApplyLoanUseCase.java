@@ -4,6 +4,7 @@ import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
 import co.com.crediya.model.loanaplication.ecxeptions.ErrorCode;
 import co.com.crediya.model.loanaplication.gateways.ClientRepository;
 import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
+import co.com.crediya.model.loanaplication.gateways.TokenServiceGateway;
 import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
 import co.com.crediya.model.loanaplication.loanAplication.LoanAplicationStatus;
 import co.com.crediya.model.loanaplication.loanAplication.validator.LoanAplicationValidator;
@@ -13,15 +14,25 @@ public class ApplyLoanUseCase {
 
     private final LoanAplicationRepository loanAplicationRepository;
     private final ClientRepository clientRepository;
+    private final TokenServiceGateway tokenServiceGateway;
 
-    public ApplyLoanUseCase(LoanAplicationRepository loanAplicationRepository, ClientRepository clientRepository) {
+    public ApplyLoanUseCase(LoanAplicationRepository loanAplicationRepository, ClientRepository clientRepository, TokenServiceGateway tokenServiceGateway) {
         this.loanAplicationRepository = loanAplicationRepository;
         this.clientRepository = clientRepository;
+        this.tokenServiceGateway = tokenServiceGateway;
+        
     }
 
     public Mono<LoanAplication> applyLoan(LoanAplication loanAplication) {
 
-        return Mono.just(loanAplication)
+        return tokenServiceGateway.getClientId().flatMap(clientId -> {
+                        if(!loanAplication.getClientId().equals(clientId)){
+                            return Mono.error(new BusinessException(ErrorCode.UNAUTHORIZED, 
+                                "The request client does not match the token"));
+                        }
+                        return Mono.just(loanAplication);
+                    }
+                )
                 .doOnNext(LoanAplicationValidator::validate)
                 .flatMap(app -> clientRepository.existsById(app.getClientId())
                         .flatMap(exists -> {

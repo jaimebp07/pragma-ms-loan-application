@@ -46,43 +46,8 @@ public class AuthorizationJwt implements WebFluxConfigurer {
     private String secret;
 
 
-    /*private final String issuerUri;
-    private final String clientId;
-    private final String jsonExpRoles;
-
-    private final ObjectMapper mapper;*/
     private static final String ROLE = "ROLE_";
     private static final String AZP = "azp";
-
-    /*public AuthorizationJwt(@Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri,
-                         @Value("${spring.security.oauth2.resourceserver.jwt.client-id}") String clientId,
-                         @Value("${jwt.json-exp-roles}") String jsonExpRoles,
-                         ObjectMapper mapper) {
-        this.issuerUri = issuerUri;
-        this.clientId = clientId;
-        this.jsonExpRoles = jsonExpRoles;
-        this.mapper = mapper;
-    }*/
-
-    /* 
-    @Bean
-    SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
-        http
-            //.authorizeExchange(authorize -> authorize.anyExchange().authenticated())
-            .authorizeExchange(auth -> auth
-                .pathMatchers("/api/v1/**").permitAll()  // permite sin token
-                .anyExchange().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 ->
-                    oauth2.jwt(jwtSpec ->
-                            jwtSpec
-                            .jwtDecoder(jwtDecoder())
-                            .jwtAuthenticationConverter(grantedAuthoritiesExtractor())
-                    )
-            );
-        return http.build();
-    }
-    */
 
     @Bean
     @Order(1)
@@ -126,7 +91,7 @@ public class AuthorizationJwt implements WebFluxConfigurer {
     }
     
 
-    // 🔑 Convierte el claim "roles" en autoridades de Spring Security
+    // Convierte el claim "roles" en autoridades de Spring Security
     private Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {
         var jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {

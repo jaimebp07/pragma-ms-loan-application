@@ -77,5 +77,5 @@ public class RouterRest {
             .path("/api/v2", builder -> builder
                 .POST("/usecase/otherpath", handlerV2::listenPOSTUseCase))
             .build();
-        }
+    }
 }
