@@ -5,6 +5,7 @@ import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
 import co.com.crediya.model.loanaplication.ecxeptions.ErrorCode;
 import co.com.crediya.model.loanaplication.gateways.ClientRepository;
 import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
+import co.com.crediya.model.loanaplication.gateways.TokenServiceGateway;
 import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
 import co.com.crediya.model.loanaplication.loanAplication.LoanAplicationStatus;
 import co.com.crediya.model.loanaplication.loanAplication.LoanType;
@@ -25,12 +26,14 @@ public class ApplyLoanUseCaseTest {
         private LoanAplicationRepository loanAplicationRepository;
         private ApplyLoanUseCase applyLoanUseCase;
         private ClientRepository clientRepository;
+        private TokenServiceGateway tokenServiceGateway;
 
         @BeforeEach
         void setUp() {
                 loanAplicationRepository = Mockito.mock(LoanAplicationRepository.class);
                 clientRepository = Mockito.mock(ClientRepository.class);
-                applyLoanUseCase = new ApplyLoanUseCase(loanAplicationRepository, clientRepository);
+                tokenServiceGateway = Mockito.mock(TokenServiceGateway.class);
+                applyLoanUseCase = new ApplyLoanUseCase(loanAplicationRepository, clientRepository, tokenServiceGateway);
 
                 when(clientRepository.existsById(any(UUID.class))).thenReturn(Mono.just(true));
         }
@@ -50,15 +53,14 @@ public class ApplyLoanUseCaseTest {
         void shouldApplyLoanSuccessfully() {
                 LoanAplication input = buildLoanAplication();
 
+                when(tokenServiceGateway.getAuthUserId()).thenReturn(Mono.just(input.getClientId()));
                 when(loanAplicationRepository.applyLoan(any(LoanAplication.class)))
                         .thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-
-                UUID expectedClientId = input.getClientId();
 
                 StepVerifier.create(applyLoanUseCase.applyLoan(input))
                         .expectNextMatches(loan ->
                                 loan.getStatus() == LoanAplicationStatus.PENDING &&
-                                loan.getClientId().equals(expectedClientId) &&
+                                loan.getClientId().equals(input.getClientId()) &&
                                 loan.getAmount().equals(BigDecimal.valueOf(5000)))
                         .verifyComplete();
 
@@ -66,9 +68,38 @@ public class ApplyLoanUseCaseTest {
         }
 
         @Test
+        void shouldFailWhenClientIdDoesNotMatchToken() {
+                LoanAplication input = buildLoanAplication();
+                UUID differentClientId = UUID.randomUUID();
+
+                when(tokenServiceGateway.getAuthUserId()).thenReturn(Mono.just(differentClientId));
+
+                StepVerifier.create(applyLoanUseCase.applyLoan(input))
+                        .expectErrorMatches(ex ->
+                                ex instanceof BusinessException &&
+                                ((BusinessException) ex).getErrorCode() == ErrorCode.UNAUTHORIZED)
+                        .verify();
+        }
+
+        @Test
+        void shouldFailWhenClientNotFound() {
+                LoanAplication input = buildLoanAplication();
+
+                when(tokenServiceGateway.getAuthUserId()).thenReturn(Mono.just(input.getClientId()));
+                when(clientRepository.existsById(input.getClientId())).thenReturn(Mono.just(false));
+
+                StepVerifier.create(applyLoanUseCase.applyLoan(input))
+                        .expectErrorMatches(ex ->
+                                ex instanceof BusinessException &&
+                                ((BusinessException) ex).getErrorCode() == ErrorCode.CLIENT_NOT_FOUND)
+                        .verify();
+        }
+
+        @Test
         void shouldMapDatabaseErrorToBusinessException() {
                 LoanAplication input = buildLoanAplication();
 
+                 when(tokenServiceGateway.getAuthUserId()).thenReturn(Mono.just(input.getClientId()));
                 when(loanAplicationRepository.applyLoan(any(LoanAplication.class)))
                         .thenReturn(Mono.error(new RuntimeException("R2DBC connection failed")));
 
@@ -87,7 +118,9 @@ public class ApplyLoanUseCaseTest {
 
                 when(loanAplicationRepository.applyLoan(any(LoanAplication.class)))
                         .thenReturn(Mono.error(new RuntimeException("Some other error")));
+                when(tokenServiceGateway.getAuthUserId()).thenReturn(Mono.just(input.getClientId()));
 
+                System.out.println("----------> input "+input.getAmount());
                 StepVerifier.create(applyLoanUseCase.applyLoan(input))
                         .expectErrorMatches(ex ->
                                 ex instanceof BusinessException &&

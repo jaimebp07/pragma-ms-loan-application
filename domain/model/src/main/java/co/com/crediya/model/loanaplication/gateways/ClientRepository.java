@@ -7,3 +7,4 @@ import reactor.core.publisher.Mono;
 public interface ClientRepository {
     Mono<Boolean> existsById(UUID clientId);
 }
+

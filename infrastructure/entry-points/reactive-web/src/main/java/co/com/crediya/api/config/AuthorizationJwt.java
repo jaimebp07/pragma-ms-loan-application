@@ -1,7 +1,5 @@
 package co.com.crediya.api.config;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimValidator;
-import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -25,10 +20,10 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -37,50 +32,17 @@ import lombok.extern.log4j.Log4j2;
 @EnableReactiveMethodSecurity
 public class AuthorizationJwt implements WebFluxConfigurer {
 
-    private final String issuerUri;
-    private final String clientId;
-    private final String jsonExpRoles;
+    @Value("${jwt.secret}")
+    private String secret;
 
-    private final ObjectMapper mapper;
+
     private static final String ROLE = "ROLE_";
-    private static final String AZP = "azp";
-
-    public AuthorizationJwt(@Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri,
-                         @Value("${spring.security.oauth2.resourceserver.jwt.client-id}") String clientId,
-                         @Value("${jwt.json-exp-roles}") String jsonExpRoles,
-                         ObjectMapper mapper) {
-        this.issuerUri = issuerUri;
-        this.clientId = clientId;
-        this.jsonExpRoles = jsonExpRoles;
-        this.mapper = mapper;
-    }
-
-    /* 
-    @Bean
-    SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
-        http
-            //.authorizeExchange(authorize -> authorize.anyExchange().authenticated())
-            .authorizeExchange(auth -> auth
-                .pathMatchers("/api/v1/**").permitAll()  // permite sin token
-                .anyExchange().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 ->
-                    oauth2.jwt(jwtSpec ->
-                            jwtSpec
-                            .jwtDecoder(jwtDecoder())
-                            .jwtAuthenticationConverter(grantedAuthoritiesExtractor())
-                    )
-            );
-        return http.build();
-    }
-    */
 
     @Bean
     @Order(1)
     SecurityWebFilterChain publicApi(ServerHttpSecurity http) {
         return http
             .securityMatcher(ServerWebExchangeMatchers.pathMatchers(
-                "/api/v1/**",
                 "/swagger-ui.html",
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
@@ -108,40 +70,25 @@ public class AuthorizationJwt implements WebFluxConfigurer {
             .build();
     }
 
+    @Bean
     public ReactiveJwtDecoder jwtDecoder() {
-        var defaultValidator = JwtValidators.createDefaultWithIssuer(issuerUri);
-        var audienceValidator = new JwtClaimValidator<String>(AZP,
-                azp -> azp != null && !azp.isEmpty() && azp.equals(clientId));
-        var tokenValidator = new DelegatingOAuth2TokenValidator<>(defaultValidator, audienceValidator);
-        var jwtDecoder = NimbusReactiveJwtDecoder
-                .withIssuerLocation(issuerUri)
-                .build();
-
-        jwtDecoder.setJwtValidator(tokenValidator);
-        return jwtDecoder;
+        // Spring se encarga de crear la clave HMAC a partir del string
+        return NimbusReactiveJwtDecoder.withSecretKey(
+                new javax.crypto.spec.SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256")
+        ).build();
     }
 
-    public Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {
+    // Convierte el claim "roles" en autoridades de Spring Security
+    private Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {
         var jwtConverter = new JwtAuthenticationConverter();
-        jwtConverter.setJwtGrantedAuthoritiesConverter(jwt ->
-                getRoles(jwt.getClaims(), jsonExpRoles)
-                .stream()
-                .map(ROLE::concat)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList()));
+        jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            List<String> roles = jwt.getClaimAsStringList("roles");
+            if (roles == null) roles = List.of();
+            return roles.stream()
+                    .map(ROLE::concat)
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        });
         return new ReactiveJwtAuthenticationConverterAdapter(jwtConverter);
-    }
-
-    private List<String> getRoles(Map<String, Object> claims, String jsonExpClaim){
-        List<String> roles = List.of();
-        try {
-            var json = mapper.writeValueAsString(claims);
-            var chunk = mapper.readTree(json).at(jsonExpClaim);
-            return mapper.readerFor(new TypeReference<List<String>>() {})
-                    .readValue(chunk);
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return roles;
-        }
     }
 }

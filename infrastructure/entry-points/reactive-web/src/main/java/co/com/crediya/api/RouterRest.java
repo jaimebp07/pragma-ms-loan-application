@@ -33,6 +33,7 @@ public class RouterRest {
                 summary = "Apply for a loan",
                 description = "Register a new loan application in the system",
                 tags = { "Loan Application V1" },
+                security = { @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth") },
                 requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     description = "Loan application details",
@@ -53,6 +54,13 @@ public class RouterRest {
                         content = @Content(schema = @Schema(implementation = String.class))
                     ),
                     @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized, invalid or missing token",
+                        content = @Content(
+                            schema = @Schema(example = "{\"code\":\"UNAUTHORIZED\", \"message\":\"Invalid or missing token\"}")
+                        )
+                    ),
+                    @ApiResponse(
                         responseCode = "500",
                         description = "Internal error",
                         content = @Content(schema = @Schema(implementation = String.class))
@@ -69,5 +77,5 @@ public class RouterRest {
             .path("/api/v2", builder -> builder
                 .POST("/usecase/otherpath", handlerV2::listenPOSTUseCase))
             .build();
-        }
+    }
 }

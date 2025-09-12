@@ -10,8 +10,6 @@ import co.com.crediya.model.loanaplication.loanAplication.LoanAplicationStatus;
 @Mapper(componentModel = "spring")
 public interface LoanAplicationMapper {
 
-    //ApplyLoanRqDTO toDTO(LoanAplication domain);
-
     default LoanAplication toDomain(ApplyLoanRqDTO dto) {
         return new LoanAplication.Builder()
                 .clientId(dto.clientId())

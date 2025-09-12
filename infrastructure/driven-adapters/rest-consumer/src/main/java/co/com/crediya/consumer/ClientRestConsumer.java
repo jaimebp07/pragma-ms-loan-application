@@ -25,7 +25,7 @@ public class ClientRestConsumer implements ClientRepository {
     public Mono<Boolean> existsById(UUID clientId) {
         log.info("Consulting client existence with id={}", clientId);
         return client.get()
-                .uri("/api/v1/usuarios/{id}", clientId)
+                .uri("/api/v1/usuarios/{id}/exists", clientId)
                 .exchangeToMono(resp -> {
                     return handleUserExistsResponse(resp);
                 });
@@ -41,13 +41,6 @@ public class ClientRestConsumer implements ClientRepository {
         return resp.createException().flatMap(Mono::error);
     }
 
-    private Mono<Boolean> fallbackExistsById(UUID clientId, Throwable ex) {
-        log.warn("Fallback clientService → devolviendo false para clientId={} por error: {}",
-                clientId, ex.toString());
-        return Mono.just(false);
-    }
-
     private record ExistsResponse(boolean exists, String message) {}
 
-    
 }

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 
 import co.com.crediya.model.loanaplication.gateways.ClientRepository;
 import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
+import co.com.crediya.model.loanaplication.gateways.TokenServiceGateway;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -43,6 +44,11 @@ public class UseCasesConfigTest {
         @Bean
         ClientRepository clientRepository() {
             return Mockito.mock(ClientRepository.class);
+        }
+
+        @Bean
+        TokenServiceGateway tokenServiceGateway() {
+            return Mockito.mock(TokenServiceGateway.class);
         }
 
         @Bean
