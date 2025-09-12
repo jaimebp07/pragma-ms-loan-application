@@ -1,7 +1,5 @@
 package co.com.crediya.api.config;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimValidator;
-import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -25,14 +20,9 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.crypto.SecretKey;
-import io.jsonwebtoken.security.Keys;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -47,7 +37,6 @@ public class AuthorizationJwt implements WebFluxConfigurer {
 
 
     private static final String ROLE = "ROLE_";
-    private static final String AZP = "azp";
 
     @Bean
     @Order(1)
@@ -83,13 +72,11 @@ public class AuthorizationJwt implements WebFluxConfigurer {
 
     @Bean
     public ReactiveJwtDecoder jwtDecoder() {
-        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-       NimbusReactiveJwtDecoder decoder = NimbusReactiveJwtDecoder.withSecretKey(key).build();
-        decoder.setJwtValidator(JwtValidators.createDefault());
-
-        return decoder;
+        // Spring se encarga de crear la clave HMAC a partir del string
+        return NimbusReactiveJwtDecoder.withSecretKey(
+                new javax.crypto.spec.SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256")
+        ).build();
     }
-    
 
     // Convierte el claim "roles" en autoridades de Spring Security
     private Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {

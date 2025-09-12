@@ -36,13 +36,13 @@ public class HandlerV1 {
         .map(loanAplicationMapper::toResponse)
         .doOnNext(dto -> log.info("Loan Aplication, Domain processed: {}", dto))
         .flatMap(applyLoanRsDTO -> ServerResponse
-            .created(serverRequest.uri())
+            .status(HttpStatus.CREATED)
             .bodyValue(applyLoanRsDTO)
         )
         .doOnSuccess(resp -> log.info("Loan Aplication, Response  created successfully"))
         .doOnError(error -> log.error("Loan Aplication, Error occurred: {}", error.getMessage()))
         .onErrorResume(BusinessException.class, ex -> {
-                log.warn("Loan Aplication,  business mistake: {}", ex.getMessage());
+                log.warn("Loan Aplication, Business error: {}", ex.getMessage());
                 return ServerResponse.status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(new ErrorResponse("BUSINESS_ERROR", ex.getMessage()));

@@ -45,7 +45,6 @@ class HandlerV1Test {
 
     @Test
     void testApplyLoanSuccess() {
-        // Arrange
         ApplyLoanRqDTO requestDto = new ApplyLoanRqDTO(
                 UUID.randomUUID(),
                 BigDecimal.valueOf(1000),

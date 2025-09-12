@@ -41,13 +41,6 @@ public class ClientRestConsumer implements ClientRepository {
         return resp.createException().flatMap(Mono::error);
     }
 
-    private Mono<Boolean> fallbackExistsById(UUID clientId, Throwable ex) {
-        log.warn("Fallback clientService → devolviendo false para clientId={} por error: {}",
-                clientId, ex.toString());
-        return Mono.just(false);
-    }
-
     private record ExistsResponse(boolean exists, String message) {}
 
-    
 }

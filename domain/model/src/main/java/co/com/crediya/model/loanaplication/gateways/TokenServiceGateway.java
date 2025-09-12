@@ -4,5 +4,5 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 public interface TokenServiceGateway {
-    Mono<UUID> getClientId();
+    Mono<UUID> getAuthUserId();
 }

@@ -7,10 +7,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    implementation "io.jsonwebtoken:jjwt-api:$jjwtApiVersion"
-    implementation "io.jsonwebtoken:jjwt-impl:$jjwtImplVersion"
-    implementation "io.jsonwebtoken:jjwt-jackson:$jjwtJacksonVersion"
-
     implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0"
     
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -19,10 +15,3 @@ dependencies {
     annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 }
 
-configurations.all {
-    resolutionStrategy {
-        force "io.jsonwebtoken:jjwt-api:$jjwtApiVersion"
-        force "io.jsonwebtoken:jjwt-impl:$jjwtImplVersion"
-        force "io.jsonwebtoken:jjwt-jackson:$jjwtJacksonVersion"
-    }
-}

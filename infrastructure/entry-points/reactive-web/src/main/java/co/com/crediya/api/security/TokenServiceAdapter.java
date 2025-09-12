@@ -2,18 +2,14 @@ package co.com.crediya.api.security;
 
 import java.util.UUID;
 
-import javax.crypto.SecretKey;
-
 import co.com.crediya.model.loanaplication.gateways.TokenServiceGateway;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -28,36 +24,16 @@ public class TokenServiceAdapter implements TokenServiceGateway {
     private String secret;
 
     @Override
-    public Mono<UUID> getClientId() {
+    public Mono<UUID> getAuthUserId() {
         return ReactiveSecurityContextHolder.getContext()
             .map(SecurityContext::getAuthentication)
-            .filter(auth -> auth instanceof JwtAuthenticationToken) 
+            .filter(auth -> auth instanceof JwtAuthenticationToken)
             .map(auth -> (JwtAuthenticationToken) auth)
-            .map(jwt -> UUID.fromString(jwt.getToken().getSubject())); 
+            .map(jwt -> UUID.fromString(jwt.getToken().getSubject()))
+            .doOnError(e -> log.error("Error al obtener el id del usuario en el token", e))
+            .onErrorResume(e -> {
+                return Mono.error(new AuthenticationCredentialsNotFoundException("Error getting user ID from token"));
+            });
     }
 
-    
-    /*@Override
-    public Mono<UUID> getClientId() {
-        return ReactiveSecurityContextHolder.getContext()
-            .map(ctx -> ctx.getAuthentication().getCredentials().toString()) // aquí asumo que guardaste el token como credentials
-            .doOnNext(token -> log.info("Token recuperado del contexto: {}", token))
-            .map(this::extractClientId);
-    }*/
-
-    private UUID extractClientId(String token){
-        return UUID.fromString(getClaims(token).getSubject());
-    }
-
-    private Claims getClaims(String token) {  
-        return Jwts.parser()  
-                .verifyWith(getKey(secret))  
-                .build()  
-                .parseSignedClaims(token)  
-                .getPayload();  
-    }
-
-    private SecretKey getKey(String secret) {
-        return Keys.hmacShaKeyFor(secret.getBytes());
-    } 
 }

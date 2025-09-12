@@ -25,7 +25,7 @@ public class ApplyLoanUseCase {
 
     public Mono<LoanAplication> applyLoan(LoanAplication loanAplication) {
 
-        return tokenServiceGateway.getClientId().flatMap(clientId -> {
+        return tokenServiceGateway.getAuthUserId().flatMap(clientId -> {
                         if(!loanAplication.getClientId().equals(clientId)){
                             return Mono.error(new BusinessException(ErrorCode.UNAUTHORIZED, 
                                 "The request client does not match the token"));
@@ -45,6 +45,9 @@ public class ApplyLoanUseCase {
                 .map(this::withPendingStatus)
                 .flatMap(loanAplicationRepository::applyLoan)
                 .onErrorMap(ex -> {
+                    if (ex instanceof BusinessException) {
+                        return ex;
+                    }
                     if (ex.getMessage() != null && ex.getMessage().contains("R2DBC")) {
                         return new BusinessException(ErrorCode.DB_ERROR, "Database connection failed");
                     }
