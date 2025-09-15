@@ -8,7 +8,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import co.com.crediya.model.loanaplication.loanAplication.LoanAplicationStatus;
-import co.com.crediya.model.loanaplication.loanAplication.LoanType;
 import lombok.Data;
 
 @Data
@@ -28,8 +27,8 @@ public class LoanAplicationEntity {
     @Column("term")
     private Integer term;
     
-    @Column("loan_type")
-    private LoanType loanType;
+    @Column("loan_type_id")
+    private UUID loanType;
 
     @Column("status")
     private LoanAplicationStatus status;

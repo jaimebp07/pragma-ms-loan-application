@@ -3,26 +3,21 @@ package co.com.crediya.r2dbc;
 import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
 import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
 import co.com.crediya.r2dbc.entity.LoanAplicationEntity;
-import co.com.crediya.r2dbc.helper.ReactiveAdapterOperations;
+import co.com.crediya.r2dbc.mapper.LoanAplicationMapper;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
 
-import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 
 @Slf4j
 @Repository
-public class LoanAplicationRepositoryAdapter extends ReactiveAdapterOperations<
-    LoanAplication,
-    LoanAplicationEntity,
-    UUID,
-    LoanAplicationReactiveRepository
-> implements LoanAplicationRepository {
+public class LoanAplicationRepositoryAdapter implements LoanAplicationRepository {
     
-    public LoanAplicationRepositoryAdapter(LoanAplicationReactiveRepository repository, ObjectMapper mapper) {
-        super(repository, mapper, d -> mapper.mapBuilder(d, LoanAplication.Builder.class).build());
+    private final LoanAplicationReactiveRepository repository;
+
+    public LoanAplicationRepositoryAdapter(LoanAplicationReactiveRepository repository) {
+        this.repository = repository;
     }
 
     @Override
@@ -34,7 +29,10 @@ public class LoanAplicationRepositoryAdapter extends ReactiveAdapterOperations<
                 loanAplication.getLoanType(),
                 loanAplication.getStatus());
 
-        return super.save(loanAplication)
+        LoanAplicationEntity entity = LoanAplicationMapper.toEntity(loanAplication);
+        
+        return repository.save(entity)
+                .map(LoanAplicationMapper::toDomain)
                 .doOnSuccess(saved -> 
                     log.info("Loan Application saved successfully: id={}, clientId={}, amount={}, status={}",
                             saved.getId(),
