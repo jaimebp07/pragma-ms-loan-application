@@ -9,14 +9,14 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
-import co.com.crediya.model.loanaplication.gateways.ClientRepository;
+import co.com.crediya.model.customer.gateways.CustomerGateway;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ClientRestConsumer implements ClientRepository {
+public class ClientRestConsumer implements CustomerGateway {
 
     private final WebClient client;
 

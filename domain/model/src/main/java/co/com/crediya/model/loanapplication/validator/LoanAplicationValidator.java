@@ -1,15 +1,15 @@
-package co.com.crediya.model.loanaplication.loanAplication.validator;
+package co.com.crediya.model.loanapplication.validator;
 
 import java.math.BigDecimal;
 
-import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
-import co.com.crediya.model.loanaplication.ecxeptions.ErrorCode;
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
-import co.com.crediya.model.loanaplication.loanAplication.LoanType;
+import co.com.crediya.model.exceptions.BusinessException;
+import co.com.crediya.model.exceptions.ErrorCode;
+import co.com.crediya.model.loanapplication.LoanApplication;
+import co.com.crediya.model.loanapplication.LoanType;
 
 public class LoanAplicationValidator {
 
-    public static void validate(LoanAplication loanAplication) {
+    public static void validate(LoanApplication loanAplication) {
         if (loanAplication.getLoanType() == null) {
             throw new BusinessException(ErrorCode.INVALID_ARGUMENT, "Loan type is required");
         }

@@ -1,29 +1,29 @@
 package co.com.crediya.usecase.applyloan;
 
-import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
-import co.com.crediya.model.loanaplication.ecxeptions.ErrorCode;
-import co.com.crediya.model.loanaplication.gateways.ClientRepository;
-import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
-import co.com.crediya.model.loanaplication.gateways.TokenServiceGateway;
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplicationStatus;
-import co.com.crediya.model.loanaplication.loanAplication.validator.LoanAplicationValidator;
+import co.com.crediya.model.customer.gateways.CustomerGateway;
+import co.com.crediya.model.exceptions.BusinessException;
+import co.com.crediya.model.exceptions.ErrorCode;
+import co.com.crediya.model.loanapplication.LoanApplication;
+import co.com.crediya.model.loanapplication.LoanApplicationStatus;
+import co.com.crediya.model.loanapplication.gateways.LoanAplicationRepository;
+import co.com.crediya.model.loanapplication.validator.LoanAplicationValidator;
+import co.com.crediya.model.security.TokenServiceGateway;
 import reactor.core.publisher.Mono;
 
 public class ApplyLoanUseCase {
 
     private final LoanAplicationRepository loanAplicationRepository;
-    private final ClientRepository clientRepository;
+    private final CustomerGateway clientRepository;
     private final TokenServiceGateway tokenServiceGateway;
 
-    public ApplyLoanUseCase(LoanAplicationRepository loanAplicationRepository, ClientRepository clientRepository, TokenServiceGateway tokenServiceGateway) {
+    public ApplyLoanUseCase(LoanAplicationRepository loanAplicationRepository, CustomerGateway clientRepository, TokenServiceGateway tokenServiceGateway) {
         this.loanAplicationRepository = loanAplicationRepository;
         this.clientRepository = clientRepository;
         this.tokenServiceGateway = tokenServiceGateway;
         
     }
 
-    public Mono<LoanAplication> applyLoan(LoanAplication loanAplication) {
+    public Mono<LoanApplication> applyLoan(LoanApplication loanAplication) {
 
         return tokenServiceGateway.getAuthUserId().flatMap(clientId -> {
                         if(!loanAplication.getClientId().equals(clientId)){
@@ -55,9 +55,9 @@ public class ApplyLoanUseCase {
                 });
     }
 
-    private LoanAplication withPendingStatus(LoanAplication loanAplication) {
+    private LoanApplication withPendingStatus(LoanApplication loanAplication) {
         return loanAplication.toBuilder()
-                .status(LoanAplicationStatus.PENDING)
+                .status(LoanApplicationStatus.PENDING)
                 .build();
     }
 }

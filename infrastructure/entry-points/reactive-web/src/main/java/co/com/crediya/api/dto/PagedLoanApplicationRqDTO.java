@@ -1,6 +1,6 @@
 package co.com.crediya.api.dto;
 
-import co.com.crediya.model.loanaplication.filter.LoanAplicationFilter;
+import co.com.crediya.model.loanapplication.filter.LoanAplicationFilter;
 import jakarta.validation.constraints.NotNull;
 
 public record PagedLoanApplicationRqDTO(

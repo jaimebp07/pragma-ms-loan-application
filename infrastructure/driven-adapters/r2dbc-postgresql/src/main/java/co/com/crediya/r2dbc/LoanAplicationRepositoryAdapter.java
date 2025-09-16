@@ -1,8 +1,8 @@
 package co.com.crediya.r2dbc;
 
-import co.com.crediya.model.loanaplication.filter.LoanAplicationFilter;
-import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
+import co.com.crediya.model.loanapplication.LoanApplication;
+import co.com.crediya.model.loanapplication.filter.LoanAplicationFilter;
+import co.com.crediya.model.loanapplication.gateways.LoanAplicationRepository;
 import co.com.crediya.r2dbc.entity.LoanAplicationEntity;
 import co.com.crediya.r2dbc.mapper.LoanAplicationMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class LoanAplicationRepositoryAdapter implements LoanAplicationRepository
     }
 
     @Override
-    public Mono<LoanAplication> applyLoan(LoanAplication loanAplication) {
+    public Mono<LoanApplication> applyLoan(LoanApplication loanAplication) {
         log.info("Saving Loan Application: clientId={}, amount={}, term={}, loanType={}, status={}",
                 loanAplication.getClientId(),
                 loanAplication.getAmount(),
@@ -58,7 +58,7 @@ public class LoanAplicationRepositoryAdapter implements LoanAplicationRepository
     }
 
     @Override
-    public Flux<LoanAplication> findPaged(int page, int size, LoanAplicationFilter filter) {
+    public Flux<LoanApplication> findPaged(int page, int size, LoanAplicationFilter filter) {
         
         List<Criteria> criteriaList = new ArrayList<>();
         filter.status().ifPresent(s -> criteriaList.add(Criteria.where("status").is(s)));

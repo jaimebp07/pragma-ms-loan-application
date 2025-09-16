@@ -1,4 +1,4 @@
-package co.com.crediya.model.loanaplication.gateways;
+package co.com.crediya.model.security;
 
 import reactor.core.publisher.Mono;
 import java.util.UUID;

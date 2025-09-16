@@ -9,9 +9,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import co.com.crediya.api.dto.ApplyLoanRqDTO;
 import co.com.crediya.api.mapper.LoanAplicationMapper;
-import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
-import co.com.crediya.model.loanaplication.filter.LoanAplicationFilter;
-import co.com.crediya.model.loanaplication.loanAplication.LoanType;
+import co.com.crediya.model.exceptions.BusinessException;
+import co.com.crediya.model.loanapplication.LoanType;
+import co.com.crediya.model.loanapplication.filter.LoanAplicationFilter;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 import co.com.crediya.usecase.getloanapplications.GetLoanApplicationsUseCase;
 

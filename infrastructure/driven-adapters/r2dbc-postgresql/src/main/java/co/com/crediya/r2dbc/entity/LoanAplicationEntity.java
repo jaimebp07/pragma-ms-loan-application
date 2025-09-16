@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplicationStatus;
+import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 import lombok.Data;
 
 @Data
@@ -31,5 +31,5 @@ public class LoanAplicationEntity {
     private UUID loanType;
 
     @Column("status")
-    private LoanAplicationStatus status;
+    private LoanApplicationStatus status;
 }

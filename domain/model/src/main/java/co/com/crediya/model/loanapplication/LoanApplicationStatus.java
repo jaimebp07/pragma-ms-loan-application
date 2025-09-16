@@ -1,8 +1,8 @@
-package co.com.crediya.model.loanaplication.loanAplication;
+package co.com.crediya.model.loanapplication;
 
-import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
+import co.com.crediya.model.exceptions.BusinessException;
 
-public enum LoanAplicationStatus {
+public enum LoanApplicationStatus {
 
     APPROVED ("Approved"),
     REJECTED ("Rejected"),
@@ -10,7 +10,7 @@ public enum LoanAplicationStatus {
 
     private final String description;
 
-    LoanAplicationStatus(String description) {
+    LoanApplicationStatus(String description) {
         this.description = description;
     }
 
@@ -18,8 +18,8 @@ public enum LoanAplicationStatus {
         return description;
     }
 
-    public static LoanAplicationStatus fromValue(String value) {
-        for (LoanAplicationStatus type : values()) {
+    public static LoanApplicationStatus fromValue(String value) {
+        for (LoanApplicationStatus type : values()) {
             if (type.name().equalsIgnoreCase(value) || 
                 type.getDescription().equalsIgnoreCase(value)) {
                 return type;

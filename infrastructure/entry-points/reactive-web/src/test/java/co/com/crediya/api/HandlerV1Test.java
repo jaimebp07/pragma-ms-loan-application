@@ -3,10 +3,10 @@ package co.com.crediya.api;
 import co.com.crediya.api.dto.ApplyLoanRqDTO;
 import co.com.crediya.api.dto.ApplyLoanRsDTO;
 import co.com.crediya.api.mapper.LoanAplicationMapper;
-import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
-import co.com.crediya.model.loanaplication.ecxeptions.ErrorCode;
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
-import co.com.crediya.model.loanaplication.loanAplication.LoanType;
+import co.com.crediya.model.exceptions.BusinessException;
+import co.com.crediya.model.exceptions.ErrorCode;
+import co.com.crediya.model.loanapplication.LoanApplication;
+import co.com.crediya.model.loanapplication.LoanType;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +52,7 @@ class HandlerV1Test {
                 LoanType.PERSONAL
         );
 
-        LoanAplication loanAplication = new LoanAplication.Builder()
+        LoanApplication loanAplication = new LoanApplication.Builder()
                 .clientId(requestDto.clientId())
                 .amount(requestDto.amount())
                 .term(requestDto.term())
@@ -94,7 +94,7 @@ class HandlerV1Test {
                 LoanType.PERSONAL
         );
 
-        LoanAplication loanAplication = new LoanAplication.Builder()
+        LoanApplication loanAplication = new LoanApplication.Builder()
                 .clientId(requestDto.clientId())
                 .amount(requestDto.amount())
                 .term(requestDto.term())
@@ -126,7 +126,7 @@ class HandlerV1Test {
                 LoanType.PERSONAL
         );
 
-        LoanAplication loanAplication = new LoanAplication.Builder()
+        LoanApplication loanAplication = new LoanApplication.Builder()
                 .clientId(requestDto.clientId())
                 .amount(requestDto.amount())
                 .term(requestDto.term())

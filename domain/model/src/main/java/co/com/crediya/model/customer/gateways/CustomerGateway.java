@@ -1,10 +1,10 @@
-package co.com.crediya.model.loanaplication.gateways;
+package co.com.crediya.model.customer.gateways;
 
 import java.util.UUID;
 
 import reactor.core.publisher.Mono;
 
-public interface ClientRepository {
+public interface CustomerGateway {
     Mono<Boolean> existsById(UUID clientId);
 }
 
