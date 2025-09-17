@@ -36,4 +36,13 @@ public class TokenServiceAdapter implements TokenServiceGateway {
             });
     }
 
+    @Override
+    public Mono<String> getRawToken() {
+        return ReactiveSecurityContextHolder.getContext()
+            .map(SecurityContext::getAuthentication)
+            .filter(auth -> auth instanceof JwtAuthenticationToken)
+            .map(auth -> (JwtAuthenticationToken) auth)
+            .map(jwt -> jwt.getToken().getTokenValue());
+    }
+
 }

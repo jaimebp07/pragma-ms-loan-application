@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import co.com.crediya.api.dto.ApplyLoanRqDTO;
 import co.com.crediya.api.mapper.LoanAplicationMapper;
 import co.com.crediya.model.exceptions.BusinessException;
+import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 import co.com.crediya.model.loanapplication.LoanType;
 import co.com.crediya.model.loanapplication.filter.LoanAplicationFilter;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
@@ -21,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-//import org.springframework.security.access.prepost.PreAuthorize;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -71,10 +71,19 @@ public class HandlerV1 {
         String status = serverRequest.queryParam("status").orElse(null);
         String loanType = serverRequest.queryParam("loanType").orElse(null);
 
-        LoanAplicationFilter filter = new LoanAplicationFilter(
-                Optional.ofNullable(status),
-                Optional.ofNullable(loanType).map(LoanType::fromValue)
-        );
+        LoanAplicationFilter filter;
+        try {
+                filter = new LoanAplicationFilter(
+                        Optional.ofNullable(status).map(LoanApplicationStatus::fromValue),
+                        Optional.ofNullable(loanType).map(LoanType::fromValue)
+                );
+        } catch (BusinessException ex) {
+                log.warn("Invalid filter: ", ex);
+                return ServerResponse.status(HttpStatus.BAD_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ErrorResponse("BUSINESS_ERROR", ex.getMessage()));
+        }
+
         return getLoanApplicationsUseCase.findPaged(page, size, filter)
                 .doOnNext(dto -> log.info("Loan Aplication, Request received: {}", dto))
                 .flatMap(pageResultRs -> ServerResponse.ok().bodyValue(pageResultRs))

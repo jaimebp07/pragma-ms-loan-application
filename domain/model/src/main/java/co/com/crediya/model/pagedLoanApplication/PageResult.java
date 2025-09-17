@@ -1,4 +1,4 @@
-package co.com.crediya.usecase.common;
+package co.com.crediya.model.pagedLoanApplication;
 
 import java.util.List;
 

@@ -5,4 +5,5 @@ import java.util.UUID;
 
 public interface TokenServiceGateway {
     Mono<UUID> getAuthUserId();
+    Mono<String> getRawToken();
 }

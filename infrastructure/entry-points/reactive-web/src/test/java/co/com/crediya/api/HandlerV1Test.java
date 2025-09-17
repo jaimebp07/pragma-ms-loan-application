@@ -8,6 +8,8 @@ import co.com.crediya.model.exceptions.ErrorCode;
 import co.com.crediya.model.loanapplication.LoanApplication;
 import co.com.crediya.model.loanapplication.LoanType;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
+import co.com.crediya.usecase.getloanapplications.GetLoanApplicationsUseCase;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -28,13 +30,14 @@ class HandlerV1Test {
     private ApplyLoanUseCase applyLoanUseCase;
     private LoanAplicationMapper loanAplicationMapper;
     private WebTestClient webTestClient;
+    private GetLoanApplicationsUseCase getLoanApplicationsUseCase;
 
     @BeforeEach
     void setUp() {
         applyLoanUseCase = mock(ApplyLoanUseCase.class);
         loanAplicationMapper = mock(LoanAplicationMapper.class);
 
-        HandlerV1 handlerV1 = new HandlerV1(applyLoanUseCase, loanAplicationMapper);
+        HandlerV1 handlerV1 = new HandlerV1(applyLoanUseCase, loanAplicationMapper,getLoanApplicationsUseCase);
 
         RouterFunction<ServerResponse> router = RouterFunctions.route()
                 .POST("/api/v1/solicitud", handlerV1::applyLoan)

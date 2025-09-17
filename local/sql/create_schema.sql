@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS credi_ya.loan_applications (
     client_id UUID NOT NULL,
     amount NUMERIC(15,2) NOT NULL,
     term INT NOT NULL,
-    loan_type_id UUID NOT NULL,  -- mismo tipo que loan_type.id
+    loan_type_id UUID NOT NULL,
     status VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
