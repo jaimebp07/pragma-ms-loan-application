@@ -3,6 +3,7 @@ package co.com.crediya.api;
 import co.com.crediya.api.dto.ApplyLoanRqDTO;
 import co.com.crediya.api.dto.ApplyLoanRsDTO;
 import co.com.crediya.api.mapper.LoanAplicationMapper;
+import co.com.crediya.api.mapper.PageResultMapper;
 import co.com.crediya.model.exceptions.BusinessException;
 import co.com.crediya.model.exceptions.ErrorCode;
 import co.com.crediya.model.loanapplication.LoanApplication;
@@ -31,13 +32,15 @@ class HandlerV1Test {
     private LoanAplicationMapper loanAplicationMapper;
     private WebTestClient webTestClient;
     private GetLoanApplicationsUseCase getLoanApplicationsUseCase;
+    private PageResultMapper pageResultMapper;
 
     @BeforeEach
     void setUp() {
         applyLoanUseCase = mock(ApplyLoanUseCase.class);
         loanAplicationMapper = mock(LoanAplicationMapper.class);
+        pageResultMapper = mock(PageResultMapper.class);
 
-        HandlerV1 handlerV1 = new HandlerV1(applyLoanUseCase, loanAplicationMapper,getLoanApplicationsUseCase);
+        HandlerV1 handlerV1 = new HandlerV1(applyLoanUseCase, loanAplicationMapper,getLoanApplicationsUseCase, pageResultMapper);
 
         RouterFunction<ServerResponse> router = RouterFunctions.route()
                 .POST("/api/v1/solicitud", handlerV1::applyLoan)

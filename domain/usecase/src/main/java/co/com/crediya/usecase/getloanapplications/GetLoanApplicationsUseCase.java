@@ -30,7 +30,7 @@ public class GetLoanApplicationsUseCase {
         this.customerGateway = customerGateway;
     }
 
-    public Mono<PageResult<EvaluationLoanApplication>> findPaged(int page, int size, LoanAplicationFilter filter) {
+    public Mono<PageResult> findPaged(int page, int size, LoanAplicationFilter filter) {
 
         Mono<List<EvaluationLoanApplication>> loansMono = repository.findPaged(page, size, filter).collectList();
         Mono<Long> count = repository.count(filter);
@@ -45,7 +45,7 @@ public class GetLoanApplicationsUseCase {
                         Set<UUID> clientIds = getIdFromLoanList(loans);
                         return customerGateway.findByIdList(clientIds)
                                 .map(customers -> enrich(loans, customers))
-                                .map(enrichedLoans -> new PageResult<>(
+                                .map(enrichedLoans -> new PageResult(
                                         enrichedLoans,
                                         totalElements,
                                         totalPages,

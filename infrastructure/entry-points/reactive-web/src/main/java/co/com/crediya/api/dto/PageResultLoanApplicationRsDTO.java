@@ -1,8 +1,10 @@
-package co.com.crediya.model.pagedLoanApplication;
+package co.com.crediya.api.dto;
 
 import java.util.List;
 
-public record PageResult (
+import co.com.crediya.model.pagedLoanApplication.EvaluationLoanApplication;
+
+public record PageResultLoanApplicationRsDTO ( 
     List<EvaluationLoanApplication> content,
     long totalElements,
     int totalPages,

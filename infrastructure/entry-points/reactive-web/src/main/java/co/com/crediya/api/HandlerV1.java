@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import co.com.crediya.api.dto.ApplyLoanRqDTO;
 import co.com.crediya.api.mapper.LoanAplicationMapper;
+import co.com.crediya.api.mapper.PageResultMapper;
 import co.com.crediya.model.exceptions.BusinessException;
 import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 import co.com.crediya.model.loanapplication.LoanType;
@@ -32,6 +33,7 @@ public class HandlerV1 {
     private  final ApplyLoanUseCase applyLoanUseCase;
     private final LoanAplicationMapper loanAplicationMapper;
     private final GetLoanApplicationsUseCase getLoanApplicationsUseCase;
+    private final PageResultMapper pageResultMapper;
 
     @PreAuthorize("hasRole('CLIENT')")
     public Mono<ServerResponse> applyLoan(ServerRequest serverRequest) {
@@ -86,6 +88,7 @@ public class HandlerV1 {
 
         return getLoanApplicationsUseCase.findPaged(page, size, filter)
                 .doOnNext(dto -> log.info("Loan Aplication, Request received: {}", dto))
+                .map(pageResultMapper::toDTO)
                 .flatMap(pageResultRs -> ServerResponse.ok().bodyValue(pageResultRs))
                 .doOnSuccess(resp -> log.info("The page pagination was successfully obtained."))
                 .doOnError(error -> log.error("Paged Loan Aplication, Error occurred: {}", error.getMessage()))
