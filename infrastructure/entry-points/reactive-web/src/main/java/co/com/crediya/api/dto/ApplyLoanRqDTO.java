@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import co.com.crediya.model.loanaplication.loanAplication.LoanType;
+import co.com.crediya.model.loanapplication.LoanType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ApplyLoanRqDTO(

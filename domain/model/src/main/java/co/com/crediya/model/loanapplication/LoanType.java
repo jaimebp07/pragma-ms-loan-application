@@ -1,9 +1,9 @@
-package co.com.crediya.model.loanaplication.loanAplication;
+package co.com.crediya.model.loanapplication;
 
 import java.util.UUID;
 
-import co.com.crediya.model.loanaplication.ecxeptions.BusinessException;
-import co.com.crediya.model.loanaplication.ecxeptions.ErrorCode;
+import co.com.crediya.model.exceptions.BusinessException;
+import co.com.crediya.model.exceptions.ErrorCode;
 
 public enum LoanType {
     

@@ -3,7 +3,7 @@ package co.com.crediya.api.dto;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplicationStatus;
+import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ApplyLoanRsDTO(
@@ -27,5 +27,5 @@ public record ApplyLoanRsDTO(
         description = "Loan application status (always starts as PENDING)",
         example = "PENDING"
     )
-    LoanAplicationStatus status
+    LoanApplicationStatus status
 ) { }

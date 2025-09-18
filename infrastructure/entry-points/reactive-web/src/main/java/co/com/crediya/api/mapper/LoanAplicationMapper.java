@@ -4,21 +4,21 @@ import org.mapstruct.Mapper;
 
 import co.com.crediya.api.dto.ApplyLoanRqDTO;
 import co.com.crediya.api.dto.ApplyLoanRsDTO;
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplicationStatus;
+import co.com.crediya.model.loanapplication.LoanApplication;
+import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 
 @Mapper(componentModel = "spring")
 public interface LoanAplicationMapper {
 
-    default LoanAplication toDomain(ApplyLoanRqDTO dto) {
-        return new LoanAplication.Builder()
+    default LoanApplication toDomain(ApplyLoanRqDTO dto) {
+        return new LoanApplication.Builder()
                 .clientId(dto.clientId())
                 .amount(dto.amount())
                 .term(dto.term())
                 .loanType(dto.loanType())
-                .status(LoanAplicationStatus.PENDING)  
+                .status(LoanApplicationStatus.PENDING)  
                 .build();
     }
 
-    ApplyLoanRsDTO toResponse(LoanAplication domain);
+    ApplyLoanRsDTO toResponse(LoanApplication domain);
 }

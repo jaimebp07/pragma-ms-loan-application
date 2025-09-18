@@ -1,12 +1,11 @@
 package co.com.crediya.r2dbc;
 
-import co.com.crediya.model.loanaplication.gateways.LoanAplicationRepository;
-import co.com.crediya.model.loanaplication.loanAplication.LoanAplication;
+import co.com.crediya.model.loanapplication.LoanApplication;
+import co.com.crediya.model.loanapplication.gateways.LoanAplicationRepository;
 import co.com.crediya.r2dbc.entity.LoanAplicationEntity;
 import co.com.crediya.r2dbc.mapper.LoanAplicationMapper;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-
 
 import org.springframework.stereotype.Repository;
 
@@ -21,7 +20,7 @@ public class LoanAplicationRepositoryAdapter implements LoanAplicationRepository
     }
 
     @Override
-    public Mono<LoanAplication> applyLoan(LoanAplication loanAplication) {
+    public Mono<LoanApplication> applyLoan(LoanApplication loanAplication) {
         log.info("Saving Loan Application: clientId={}, amount={}, term={}, loanType={}, status={}",
                 loanAplication.getClientId(),
                 loanAplication.getAmount(),

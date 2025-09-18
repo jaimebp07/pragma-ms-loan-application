@@ -2,13 +2,13 @@ package co.com.crediya.api.security;
 
 import java.util.UUID;
 
-import co.com.crediya.model.loanaplication.gateways.TokenServiceGateway;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
+
+import co.com.crediya.model.security.TokenServiceGateway;
 import reactor.core.publisher.Mono;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +34,15 @@ public class TokenServiceAdapter implements TokenServiceGateway {
             .onErrorResume(e -> {
                 return Mono.error(new AuthenticationCredentialsNotFoundException("Error getting user ID from token"));
             });
+    }
+
+    @Override
+    public Mono<String> getRawToken() {
+        return ReactiveSecurityContextHolder.getContext()
+            .map(SecurityContext::getAuthentication)
+            .filter(auth -> auth instanceof JwtAuthenticationToken)
+            .map(auth -> (JwtAuthenticationToken) auth)
+            .map(jwt -> jwt.getToken().getTokenValue());
     }
 
 }
