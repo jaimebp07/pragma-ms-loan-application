@@ -1,0 +1,74 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: "LoanApplication"
+  devtools:
+    add-properties: false
+  h2:
+    console:
+      enabled: true
+      path: "/h2"
+  webclient:
+    users:
+      base-url: http://autenticacion:8080/api/v1/usuarios
+
+jwt:
+  json-exp-roles: "/roles"
+  secret: "miClaveSuperSecretaConAlMenos32Caracteres123!"
+  expiration: 3600
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    circuitbreakers:
+      enabled: true
+
+cors:
+  allowed-origins: "http://localhost:4200,http://localhost:8082"
+
+adapters:
+  r2dbc:
+    host: ${DB_HOST:postgres-solicitudes}
+    port: ${DB_PORT:5432}
+    database: ${DB_NAME:postgres}
+    schema: ${DB_SCHEMA:credi_ya}
+    username: ${DB_USER:admin}
+    password: ${DB_PASSWORD:loanapplications}
+    
+logging:
+  level:
+    root: "INFO"
+    org.springframework: "INFO"
+    reactor.netty: "INFO"
+    co.com.crediya: "DEBUG"
+    org.springframework.security: DEBUG
+    org.springframework.security.web.server: DEBUG
+  pattern:
+    console: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+
+adapter:
+  restconsumer:
+    timeout: 5000
+    url: "http://autenticacion:8080"
+    
+resilience4j:
+  circuitbreaker:
+    instances:
+      clientService:   # 👈 este debe coincidir con el "name" en  @CircuitBreaker
+        registerHealthIndicator: true
+        failureRateThreshold: 50           # % de fallos permitido
+        slowCallRateThreshold: 50          # % de llamadas lentas permitido
+        slowCallDurationThreshold: 2s      # llamadas >2s se consideran lentas
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10              # ventana de 10 llamadas
+        minimumNumberOfCalls: 5            # no activa hasta mínimo 5 llamadas
+        waitDurationInOpenState: 10s 
