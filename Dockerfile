@@ -9,5 +9,5 @@ RUN gradle :applications:app-service:build -x test
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /home/gradle/project/applications/app-service/build/libs/app-service-*.jar app.jar
-EXPOSE 8080
+EXPOSE 8082
 ENTRYPOINT ["java","-jar","app.jar"]
