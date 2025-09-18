@@ -121,7 +121,6 @@ public class ApplyLoanUseCaseTest {
                         .thenReturn(Mono.error(new RuntimeException("Some other error")));
                 when(tokenServiceGateway.getAuthUserId()).thenReturn(Mono.just(input.getClientId()));
 
-                System.out.println("----------> input "+input.getAmount());
                 StepVerifier.create(applyLoanUseCase.applyLoan(input))
                         .expectErrorMatches(ex ->
                                 ex instanceof BusinessException &&

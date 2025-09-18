@@ -62,10 +62,6 @@ public class GetLoanApplicationsUseCase {
     }
 
     private List<EvaluationLoanApplication> enrich( List<EvaluationLoanApplication> loans, Set<Customer> customers) {
-        customers.forEach(customer -> {
-            System.out.println("ID: " + customer.id());
-            System.out.println("Nombre: " + customer.email());
-        });
         return loans.stream()
                 .map(eval -> {
                     UUID clientId = eval.getLoanApplication().getClientId();
