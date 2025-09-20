@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 until nc -z ${DB_HOST:-postgres-auth} ${DB_PORT:-5432}; do
-  echo "Esperando a que Postgres esté disponible..."
+  echo "MS solicitudes, Esperando a que Postgres esté disponible..."
   sleep 2
 done
 
