@@ -10,7 +10,7 @@ FROM eclipse-temurin:17-jre-alpine
 RUN apk add --no-cache netcat-openbsd
 
 WORKDIR /app
-COPY --from=build /home/gradle/project/app-service/build/libs/app-service-*.jar app.jar
+COPY --from=build /home/gradle/project/applications/app-service/build/libs/LoanApplication.jar app.jar
 
 # wait-for-postgres.sh debe estar guardado en LF(utilizado por unix) no en CRLF(utilizado por windows)
 COPY wait-for-postgres.sh /wait-for-postgres.sh
