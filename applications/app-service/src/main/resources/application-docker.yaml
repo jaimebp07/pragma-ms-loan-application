@@ -58,7 +58,7 @@ logging:
 adapter:
   restconsumer:
     timeout: 5000
-    url: "http://autenticacion:8080"
+    url: ${AUTHENTICATION_URL:http://autenticacion:8080}
     
 resilience4j:
   circuitbreaker:
