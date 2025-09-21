@@ -43,6 +43,9 @@ adapters:
     schema: ${DB_SCHEMA:credi_ya}
     username: ${DB_USER:admin}
     password: ${DB_PASSWORD:db_loanapplications}
+  restconsumer:
+    timeout: 5000
+    url: ${AUTHENTICATION_URL:http://autenticacion:8080}
     
 logging:
   level:
@@ -54,11 +57,6 @@ logging:
     org.springframework.security.web.server: DEBUG
   pattern:
     console: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
-
-adapter:
-  restconsumer:
-    timeout: 5000
-    url: ${AUTHENTICATION_URL:http://autenticacion:8080}
     
 resilience4j:
   circuitbreaker:
