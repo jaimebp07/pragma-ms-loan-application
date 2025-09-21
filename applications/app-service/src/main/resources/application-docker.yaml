@@ -10,9 +10,6 @@ spring:
     console:
       enabled: true
       path: "/h2"
-  webclient:
-    users:
-      base-url: http://autenticacion:8080/api/v1/usuarios
 
 jwt:
   json-exp-roles: "/roles"
@@ -45,7 +42,7 @@ adapters:
     password: ${DB_PASSWORD:db_loanapplications}
   restconsumer:
     timeout: 5000
-    url: ${AUTHENTICATION_URL:http://autenticacion:8080}
+    url: ${AUTHENTICATION_URL:http://ms_authentication:8080}
     
 logging:
   level:
