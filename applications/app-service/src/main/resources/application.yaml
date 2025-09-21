@@ -46,7 +46,7 @@ adapters:
     database: "postgres"
     schema: "credi_ya"
     username: "admin"
-    password: "loanaplications"
+    password: "db_loanapplications"
 logging:
   level:
     root: "INFO"

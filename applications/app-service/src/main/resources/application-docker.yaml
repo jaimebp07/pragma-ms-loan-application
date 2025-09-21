@@ -37,12 +37,12 @@ cors:
 
 adapters:
   r2dbc:
-    host: ${DB_HOST:postgres-solicitudes}
+    host: ${DB_HOST:db_loanapplications}
     port: ${DB_PORT:5432}
     database: ${DB_NAME:postgres}
     schema: ${DB_SCHEMA:credi_ya}
     username: ${DB_USER:admin}
-    password: ${DB_PASSWORD:loanapplications}
+    password: ${DB_PASSWORD:db_loanapplications}
     
 logging:
   level:
