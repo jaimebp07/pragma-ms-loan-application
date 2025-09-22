@@ -33,6 +33,7 @@ class HandlerV1Test {
     private WebTestClient webTestClient;
     private GetLoanApplicationsUseCase getLoanApplicationsUseCase;
     private PageResultMapper pageResultMapper;
+    private final UpdateLoanApplicationStatusUseCase updateLoanApplicationStatusUseCase;
 
     @BeforeEach
     void setUp() {
@@ -40,7 +41,7 @@ class HandlerV1Test {
         loanAplicationMapper = mock(LoanAplicationMapper.class);
         pageResultMapper = mock(PageResultMapper.class);
 
-        HandlerV1 handlerV1 = new HandlerV1(applyLoanUseCase, loanAplicationMapper,getLoanApplicationsUseCase, pageResultMapper);
+        HandlerV1 handlerV1 = new HandlerV1(applyLoanUseCase, loanAplicationMapper,getLoanApplicationsUseCase, pageResultMapper, updateLoanApplicationStatusUseCase);
 
         RouterFunction<ServerResponse> router = RouterFunctions.route()
                 .POST("/api/v1/solicitud", handlerV1::applyLoan)

@@ -9,6 +9,7 @@ import co.com.crediya.model.pagedLoanApplication.gateways.EvaluationLoanApplicat
 import co.com.crediya.model.security.TokenServiceGateway;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 import co.com.crediya.usecase.getloanapplications.GetLoanApplicationsUseCase;
+import co.com.crediya.usecase.updateloanapplicationstatus.UpdateLoanApplicationStatusUseCase;
 
 @Configuration
 public class UseCasesConfig {
@@ -24,5 +25,10 @@ public class UseCasesConfig {
         @Bean
         GetLoanApplicationsUseCase getLoanApplicationsUseCase(EvaluationLoanApplicationGateway repository, CustomerGateway customerGateway){
                 return new GetLoanApplicationsUseCase(repository, customerGateway);
+        }
+
+        @Bean
+        UpdateLoanApplicationStatusUseCase updateLoanApplicationStatusUseCase(LoanAplicationRepository loanAplicationRepository, CustomerGateway customerGateway){
+                return new UpdateLoanApplicationStatusUseCase(loanAplicationRepository, customerGateway);
         }
 }

@@ -11,20 +11,13 @@ spring:
       path: "/h2"
   profiles:
     include: null
-  #security:
- #   oauth2:
-  #    resourceserver:
-  #      jwt:
-  #        #issuer-uri: "https://idp.example.com/issuer"
-          
   webclient:
     users:
-      base-url: http://localhost:8082/api/v1/usuarios
-
+      base-url: "http://localhost:8082/api/v1/usuarios"
 jwt:
   json-exp-roles: "/roles"
   secret: "miClaveSuperSecretaConAlMenos32Caracteres123!"
-  expiration: 3600 
+  expiration: 3600
 management:
   endpoints:
     web:
@@ -50,6 +43,10 @@ adapters:
   restconsumer:
     timeout: 5000
     url: "http://localhost:8080"
+  sqs:
+    region: us-east-1
+    queue-url: http://localhost:4566/000000000000/loan-decisions 
+    endpoint: http://localhost:4566 
 
 logging:
   level:
@@ -57,20 +54,24 @@ logging:
     org.springframework: "INFO"
     reactor.netty: "INFO"
     co.com.crediya: "DEBUG"
-    org.springframework.security: DEBUG
-    org.springframework.security.web.server: DEBUG
+    org.springframework.security: "DEBUG"
+    org.springframework.security.web.server: "DEBUG"
   pattern:
     console: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
-    
 resilience4j:
   circuitbreaker:
     instances:
-      clientService:   # 👈 este debe coincidir con el "name" en  @CircuitBreaker
+      clientService:
         registerHealthIndicator: true
-        failureRateThreshold: 50           # % de fallos permitido
-        slowCallRateThreshold: 50          # % de llamadas lentas permitido
-        slowCallDurationThreshold: 2s      # llamadas >2s se consideran lentas
+        failureRateThreshold: 50
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: "2s"
         permittedNumberOfCallsInHalfOpenState: 3
-        slidingWindowSize: 10              # ventana de 10 llamadas
-        minimumNumberOfCalls: 5            # no activa hasta mínimo 5 llamadas
-        waitDurationInOpenState: 10s 
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: "10s"
+adapter:
+  sqs:
+    region: "us-east-1"
+    queueUrl: "http://localhost:4566/000000000000/sample"
+    endpoint: "http://localhost:4566 # For localstack only"

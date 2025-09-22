@@ -43,6 +43,10 @@ adapters:
   restconsumer:
     timeout: 5000
     url: ${AUTHENTICATION_URL:http://ms_authentication:8080}
+  sqs:
+    region: us-east-1
+    queue-url: http://localhost:4566/000000000000/loan-decisions
+    endpoint: http://localhost:4566 
     
 logging:
   level:

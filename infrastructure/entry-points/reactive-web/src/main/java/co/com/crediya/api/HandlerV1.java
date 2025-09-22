@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import co.com.crediya.api.dto.ApplyLoanRqDTO;
+import co.com.crediya.api.dto.UpdateStatusRqDTO;
 import co.com.crediya.api.mapper.LoanAplicationMapper;
 import co.com.crediya.api.mapper.PageResultMapper;
 import co.com.crediya.model.exceptions.BusinessException;
@@ -16,7 +17,9 @@ import co.com.crediya.model.loanapplication.LoanType;
 import co.com.crediya.model.loanapplication.filter.LoanAplicationFilter;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 import co.com.crediya.usecase.getloanapplications.GetLoanApplicationsUseCase;
+import co.com.crediya.usecase.updateloanapplicationstatus.UpdateLoanApplicationStatusUseCase;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -34,6 +37,7 @@ public class HandlerV1 {
     private final LoanAplicationMapper loanAplicationMapper;
     private final GetLoanApplicationsUseCase getLoanApplicationsUseCase;
     private final PageResultMapper pageResultMapper;
+    private final UpdateLoanApplicationStatusUseCase updateLoanApplicationStatusUseCase;
 
     @PreAuthorize("hasRole('CLIENT')")
     public Mono<ServerResponse> applyLoan(ServerRequest serverRequest) {
@@ -106,6 +110,33 @@ public class HandlerV1 {
                                 .bodyValue(new ErrorResponse("INTERNAL_ERROR", ex.getMessage()));
                         }
                 );
+    }
+
+    @PreAuthorize("hasRole('ADVISOR')")
+    public Mono<ServerResponse>updateLoanAplicationStatus(ServerRequest serverRequest){
+        return serverRequest.bodyToMono(UpdateStatusRqDTO.class)
+        .flatMap(dto -> {
+            //LoanApplicationStatus status = LoanApplicationStatus.fromValue(dto.status());
+            return updateLoanApplicationStatusUseCase
+                .updateLoanAplicationStatus(dto.loanId(), dto.status(), Optional.ofNullable(dto.comment()))
+                .flatMap(updated -> {
+                    // Publicar evento SQS
+                    /*LoanDecisionEvent event = new LoanDecisionEvent(
+                        updated.getLoanApplication().getId(),
+                        updated.getEmail(),
+                        status.getLoanApplication().getStatus(),
+                        "NOMBRE",
+                        Instant.now()
+                    );*/
+                    //return sqsPublisher.publish(event).thenReturn(updated);
+                    return Mono.empty();
+                });
+        })
+        .flatMap(updated -> ServerResponse.ok().bodyValue(updated))
+        .doOnError(e -> log.error("Error updating status", e))
+        .onErrorResume(e -> ServerResponse.badRequest()
+                .bodyValue(new ErrorResponse("ERROR", e.getMessage()))
+        );
     }
 
     private record ErrorResponse(String code, String message) {}

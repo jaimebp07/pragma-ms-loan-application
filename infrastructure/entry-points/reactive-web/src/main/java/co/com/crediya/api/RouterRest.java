@@ -160,6 +160,7 @@ public class RouterRest {
             .path("/api/v1", builder -> builder
                 .POST("/solicitud", handlerV1::applyLoan)
                 .GET("/solicitud", handlerV1::getLoanApplications)
+                .PUT("/solicitud", handlerV1::updateLoanAplicationStatus)
             )
             .path("/api/v2", builder -> builder
                 .POST("/usecase/otherpath", handlerV2::listenPOSTUseCase))

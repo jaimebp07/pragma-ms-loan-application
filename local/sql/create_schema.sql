@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS credi_ya.loan_applications (
     term INT NOT NULL,
     loan_type_id UUID NOT NULL,
     status VARCHAR(50) NOT NULL,
+    approved_by UUID NULL,                -- id del asesor
+    decision_reason TEXT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_loan_type
@@ -30,4 +32,15 @@ CREATE TABLE IF NOT EXISTS credi_ya.loan_applications (
         REFERENCES credi_ya.loan_type (id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
+);
+
+CREATE TABLE outbox_events (
+  id UUID PRIMARY KEY,
+  aggregate_type VARCHAR,
+  aggregate_id UUID,
+  event_type VARCHAR,
+  payload JSONB,
+  created_at TIMESTAMP,
+  dispatched BOOLEAN DEFAULT FALSE,
+  dispatched_at TIMESTAMP NULL
 );
