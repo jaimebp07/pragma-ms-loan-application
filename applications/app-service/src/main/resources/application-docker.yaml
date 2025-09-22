@@ -1,5 +1,6 @@
 server:
   port: 8082
+
 spring:
   application:
     name: "LoanApplication"
@@ -9,22 +10,12 @@ spring:
     console:
       enabled: true
       path: "/h2"
-  profiles:
-    include: null
-  #security:
- #   oauth2:
-  #    resourceserver:
-  #      jwt:
-  #        #issuer-uri: "https://idp.example.com/issuer"
-          
-  webclient:
-    users:
-      base-url: http://localhost:8082/api/v1/usuarios
 
 jwt:
   json-exp-roles: "/roles"
   secret: "miClaveSuperSecretaConAlMenos32Caracteres123!"
-  expiration: 3600 
+  expiration: 3600
+
 management:
   endpoints:
     web:
@@ -37,20 +28,22 @@ management:
   health:
     circuitbreakers:
       enabled: true
+
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8082"
+
 adapters:
   r2dbc:
-    host: "localhost"
-    port: 5435
-    database: "postgres"
-    schema: "credi_ya"
-    username: "admin"
-    password: "db_loanapplications"
+    host: ${DB_HOST:db_loanapplications}
+    port: ${DB_PORT:5432}
+    database: ${DB_NAME:postgres}
+    schema: ${DB_SCHEMA:credi_ya}
+    username: ${DB_USER:admin}
+    password: ${DB_PASSWORD:db_loanapplications}
   restconsumer:
     timeout: 5000
-    url: "http://localhost:8080"
-
+    url: ${AUTHENTICATION_URL:http://ms_authentication:8080}
+    
 logging:
   level:
     root: "INFO"
