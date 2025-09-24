@@ -11,10 +11,12 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import co.com.crediya.api.dto.ApplyLoanRqDTO;
 import co.com.crediya.api.dto.ApplyLoanRsDTO;
 import co.com.crediya.api.dto.PageResultLoanApplicationRsDTO;
+import co.com.crediya.api.dto.UpdateStatusRqDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -152,6 +154,80 @@ public class RouterRest {
                     )
                 }
             )
+        ),
+        @RouterOperation(
+            path = "/api/v1/solicitud",
+            method = RequestMethod.PUT,
+            produces = { "application/json" },
+            consumes = { "application/json" },
+            beanClass = HandlerV1.class,
+            beanMethod = "updateLoanAplicationStatus",
+            operation = @Operation(
+                operationId = "updateLoanApplicationStatus",
+                summary = "Update loan application status",
+                description = "Allows an advisor to change the status of an existing loan application.",
+                tags = { "Loan Application V1" },
+                security = { @SecurityRequirement(name = "bearerAuth") },
+                requestBody = @io.swagger.v3.oas.annotations.parameters.
+                    RequestBody(
+                        required = true,
+                        description = "Loan application ID, new status and optional comment",
+                        content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UpdateStatusRqDTO.class),
+                            examples = {
+                                @ExampleObject( 
+                                    name = "Ejemplo petición",
+                                    value = """
+                                        {
+                                            "loanId": "b92429f7-51e9-4252-b0a0-ea71d89af000",
+                                            "status": "APPROVED",
+                                            "comment": "Solicitud aprobada por asesor"
+                                        }
+                                    """
+                                )
+                            }
+                        )
+                    ),
+                responses = {
+                    @ApiResponse(
+                        responseCode = "200",
+                        description = "Loan status updated successfully",
+                        content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                implementation = UpdateStatusRqDTO.class)
+                        )
+                    ),
+                    @ApiResponse(
+                        responseCode = "400",
+                        description = "Validation or business error",
+                        content = @Content(
+                            schema = @Schema(
+                                example = "{\"code\":\"BUSINESS_ERROR\",\"message\":\"Invalid status\"}"
+                            )
+                        )
+                    ),
+                    @ApiResponse(
+                        responseCode = "401",
+                        description = "Unauthorized, invalid or missing token",
+                        content = @Content(
+                            schema = @Schema(
+                                example = "{\"code\":\"UNAUTHORIZED\",\"message\":\"Invalid or missing token\"}"
+                            )
+                        )
+                    ),
+                    @ApiResponse(
+                        responseCode = "500",
+                        description = "Internal server error",
+                        content = @Content(
+                            schema = @Schema(
+                                example = "{\"code\":\"INTERNAL_ERROR\",\"message\":\"Unexpected error\"}"
+                            )
+                        )
+                    )
+                }
+            )
         )
     })
     RouterFunction<ServerResponse> routerFunction(HandlerV1 handlerV1, HandlerV2 handlerV2) {
@@ -160,6 +236,7 @@ public class RouterRest {
             .path("/api/v1", builder -> builder
                 .POST("/solicitud", handlerV1::applyLoan)
                 .GET("/solicitud", handlerV1::getLoanApplications)
+                .PUT("/solicitud", handlerV1::updateLoanAplicationStatus)
             )
             .path("/api/v2", builder -> builder
                 .POST("/usecase/otherpath", handlerV2::listenPOSTUseCase))

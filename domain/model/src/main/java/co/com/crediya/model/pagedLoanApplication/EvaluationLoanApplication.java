@@ -8,6 +8,7 @@ public class EvaluationLoanApplication {
 
     private final LoanApplication loanApplication;
     private final BigDecimal interestRate;
+    private final String name;
     private final String email;
     private final BigDecimal baseSalary;
     private final BigDecimal monthlyAmountLoanApplication;
@@ -15,6 +16,7 @@ public class EvaluationLoanApplication {
     private EvaluationLoanApplication(Builder builder) {
         this.loanApplication = builder.loanApplication;
         this.interestRate = builder.interestRate;
+        this.name = builder.name;
         this.email = builder.email;
         this.baseSalary = builder.baseSalary;
         this.monthlyAmountLoanApplication = builder.monthlyAmountLoanApplication;
@@ -23,6 +25,7 @@ public class EvaluationLoanApplication {
     public static class Builder {
         private LoanApplication loanApplication;
         private BigDecimal interestRate;
+        private String name;
         private String email;
         private BigDecimal baseSalary;
         private BigDecimal monthlyAmountLoanApplication;
@@ -34,6 +37,11 @@ public class EvaluationLoanApplication {
 
         public Builder interestRate(BigDecimal interestRate) {
             this.interestRate = interestRate;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
             return this;
         }
 
@@ -61,6 +69,7 @@ public class EvaluationLoanApplication {
         return new Builder()
                 .loanApplication(this.loanApplication)
                 .interestRate(this.interestRate)
+                .name(this.name)
                 .email(this.email)
                 .baseSalary(this.baseSalary)
                 .monthlyAmountLoanApplication(this.monthlyAmountLoanApplication);
@@ -74,6 +83,10 @@ public class EvaluationLoanApplication {
         return interestRate;
     }
 
+    public String getName() {
+        return name;
+    }
+    
     public String getEmail() {
         return email;
     }
