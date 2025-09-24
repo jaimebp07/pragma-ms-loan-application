@@ -1,11 +1,15 @@
 package co.com.crediya.r2dbc;
 
 import co.com.crediya.model.loanapplication.LoanApplication;
+import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 import co.com.crediya.model.loanapplication.gateways.LoanAplicationRepository;
 import co.com.crediya.r2dbc.entity.LoanAplicationEntity;
 import co.com.crediya.r2dbc.mapper.LoanAplicationMapper;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -44,5 +48,20 @@ public class LoanAplicationRepositoryAdapter implements LoanAplicationRepository
                     log.error("Failed to save Loan Application for clientId={} due to: {}", 
                             loanAplication.getClientId(), ex.getMessage(), ex)
                 );
+    }
+
+    @Override
+    public Mono<LoanApplication> updateLoanAplicationStatus(UUID loanApplicationID, LoanApplicationStatus status,
+            Optional<String> comment) {
+        return repository.findById(loanApplicationID)
+        .switchIfEmpty(Mono.error(new IllegalArgumentException("Solicitud no encontrada")))
+        .flatMap(entity -> {
+            entity.setStatus(status);
+            return repository.save(entity);
+        })
+        .map(LoanAplicationMapper::toDomain)
+        .doOnSuccess(updated ->
+            log.info("Status updated: id={}, newStatus={}", updated.getId(), updated.getStatus())
+        );
     }
 }

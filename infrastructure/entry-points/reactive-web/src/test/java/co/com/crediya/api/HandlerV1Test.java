@@ -10,6 +10,7 @@ import co.com.crediya.model.loanapplication.LoanApplication;
 import co.com.crediya.model.loanapplication.LoanType;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 import co.com.crediya.usecase.getloanapplications.GetLoanApplicationsUseCase;
+import co.com.crediya.usecase.updateloanapplicationstatus.UpdateLoanApplicationStatusUseCase;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ class HandlerV1Test {
     private WebTestClient webTestClient;
     private GetLoanApplicationsUseCase getLoanApplicationsUseCase;
     private PageResultMapper pageResultMapper;
+    private UpdateLoanApplicationStatusUseCase updateLoanApplicationStatusUseCase;
 
     @BeforeEach
     void setUp() {
@@ -40,7 +42,7 @@ class HandlerV1Test {
         loanAplicationMapper = mock(LoanAplicationMapper.class);
         pageResultMapper = mock(PageResultMapper.class);
 
-        HandlerV1 handlerV1 = new HandlerV1(applyLoanUseCase, loanAplicationMapper,getLoanApplicationsUseCase, pageResultMapper);
+        HandlerV1 handlerV1 = new HandlerV1(applyLoanUseCase, loanAplicationMapper,getLoanApplicationsUseCase, pageResultMapper, updateLoanApplicationStatusUseCase);
 
         RouterFunction<ServerResponse> router = RouterFunctions.route()
                 .POST("/api/v1/solicitud", handlerV1::applyLoan)
