@@ -1,11 +1,20 @@
 package co.com.crediya.usecase.applyloan;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import co.com.crediya.model.customer.Customer;
 import co.com.crediya.model.customer.gateways.CustomerGateway;
 import co.com.crediya.model.exceptions.BusinessException;
 import co.com.crediya.model.exceptions.ErrorCode;
 import co.com.crediya.model.loanapplication.LoanApplication;
 import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 import co.com.crediya.model.loanapplication.gateways.LoanAplicationRepository;
+import co.com.crediya.model.loanapplication.gateways.LoanCapacityPublisherGateway;
 import co.com.crediya.model.loanapplication.validator.LoanAplicationValidator;
 import co.com.crediya.model.security.TokenServiceGateway;
 import reactor.core.publisher.Mono;
@@ -15,12 +24,15 @@ public class ApplyLoanUseCase {
     private final LoanAplicationRepository loanAplicationRepository;
     private final CustomerGateway clientRepository;
     private final TokenServiceGateway tokenServiceGateway;
+    private final LoanCapacityPublisherGateway loanCapacity;
+    private static final int SCALE = 2;
+    private static final BigDecimal DEFAULT_INTEREST_RATE = BigDecimal.valueOf(2.6);
 
-    public ApplyLoanUseCase(LoanAplicationRepository loanAplicationRepository, CustomerGateway clientRepository, TokenServiceGateway tokenServiceGateway) {
+    public ApplyLoanUseCase(LoanAplicationRepository loanAplicationRepository, CustomerGateway clientRepository, TokenServiceGateway tokenServiceGateway, LoanCapacityPublisherGateway loanCapacity) {
         this.loanAplicationRepository = loanAplicationRepository;
         this.clientRepository = clientRepository;
         this.tokenServiceGateway = tokenServiceGateway;
-        
+        this.loanCapacity = loanCapacity;
     }
 
     public Mono<LoanApplication> applyLoan(LoanApplication loanAplication) {
@@ -42,7 +54,18 @@ public class ApplyLoanUseCase {
                             return Mono.just(app);
                         })
                 )
-                .map(this::withPendingStatus)
+                .flatMap(loan -> 
+                    loanAplicationRepository.isAutomaticValidation(loan.getLoanType())
+                        .flatMap(isAutomaticValidation -> {
+                                if(isAutomaticValidation){
+                                    return calculateCurrentMonthlyDebt(
+                                        loanAplicationRepository.getLoansAprovedByCustomer(loan.getClientId())).automaticallyValidate(loan, currentMonthlyDebt); //TODO 
+                                } else {
+                                    return Mono.just(withPendingStatus(loan));
+                                }
+                            }
+                        )
+                )
                 .flatMap(loanAplicationRepository::applyLoan)
                 .onErrorMap(ex -> {
                     if (ex instanceof BusinessException) {
@@ -53,6 +76,80 @@ public class ApplyLoanUseCase {
                     }
                     return new BusinessException(ErrorCode.UNEXPECTED_ERROR, "Unexpected error: " + ex.getMessage());
                 });
+    }
+
+    private Mono<BigDecimal> calculateCurrentMonthlyDebt(Mono<List<LoanApplication>> loansApprovedByCustomer) {
+        return loansApprovedByCustomer.map(loans ->
+            loans.stream()
+                .map(loan -> calculateMonthlyAmount(loan, DEFAULT_INTEREST_RATE))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+        );
+    }
+
+
+    //TODO pasar a un archivo utils
+    private BigDecimal calculateMonthlyAmount(LoanApplication loan, BigDecimal interestRate) {
+
+        BigDecimal interest = loan.getAmount()
+                                    .multiply(interestRate)
+                                    .divide(BigDecimal.valueOf(100), SCALE + 2, RoundingMode.HALF_UP);
+
+        BigDecimal totalWithInterest = loan.getAmount().add(interest);
+
+        return totalWithInterest.divide(
+                BigDecimal.valueOf(loan.getTerm()),
+                SCALE,
+                RoundingMode.HALF_UP
+        );
+    }
+
+    private Mono<LoanApplication> automaticallyValidate(LoanApplication loan, BigDecimal currentMonthlyDebt) {
+        Set<UUID> customerUUID = new HashSet<>(Set.of(loan.getClientId()));
+        return clientRepository.findByIdList(customerUUID)
+            .flatMap(customers -> {
+
+                if (customers.size() != 1) {
+                    return Mono.error(new BusinessException(
+                        ErrorCode.CLIENT_NOT_FOUND,
+                        "Automatic loan validation, exactly one client was expected, found: " + customers.size()
+                    ));
+                } else {
+
+                    Customer customer = customers.iterator().next();
+                    String message = toJson(customer, loan);
+
+                    return loanCapacity.validateLoanPublish(message).map( status -> {
+                        return loan.toBuilder().status(status).build();
+                    });
+                }
+            });
+    }
+
+    private String toJson(Customer customer, LoanApplication loan) {
+        String message =
+                "{"
+                + "\"loan\":{"
+                    + "\"id\":\"" + loan.getId() + "\","
+                    + "\"clientId\":\"" + loan.getClientId() + "\","
+                    + "\"amount\":" + loan.getAmount() + ","
+                    + "\"term\":" + loan.getTerm() + ","
+                    + "\"loanType\":\"" + loan.getLoanType() + "\","
+                    + "\"status\":\"" + loan.getStatus() + "\""
+                + "},"
+                + "\"customer\":{"
+                    + "\"id\":\"" + customer.id() + "\","
+                    + "\"firstName\":\"" + escape(customer.firstName()) + "\","
+                    + "\"lastName\":\"" + escape(customer.lastName()) + "\","
+                    + "\"email\":\"" + escape(customer.email()) + "\","
+                    + "\"baseSalary\":" + customer.baseSalary()
+                + "}"
+                + "}";
+        return message;
+    }
+
+    private static String escape(String value) {
+        if (value == null) return "";
+        return value.replace("\"", "\\\"");
     }
 
     private LoanApplication withPendingStatus(LoanApplication loanAplication) {

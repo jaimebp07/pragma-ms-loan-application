@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import co.com.crediya.model.customer.gateways.CustomerGateway;
 import co.com.crediya.model.loanapplication.gateways.LoanAplicationRepository;
+import co.com.crediya.model.loanapplication.gateways.LoanCapacityPublisherGateway;
 import co.com.crediya.model.pagedLoanApplication.gateways.EvaluationLoanApplicationGateway;
 import co.com.crediya.model.pagedLoanApplication.gateways.LoanDecisionPublisherGateway;
 import co.com.crediya.model.security.TokenServiceGateway;
@@ -17,10 +18,11 @@ public class UseCasesConfig {
         
         @Bean
         ApplyLoanUseCase applyLoanUseCase(
-                LoanAplicationRepository loanApplicationRepository, 
+                LoanAplicationRepository loanApplicationRepository,
                 CustomerGateway clientRepository, 
-                TokenServiceGateway tokenServiceGateway) {
-                return new ApplyLoanUseCase(loanApplicationRepository, clientRepository, tokenServiceGateway);
+                TokenServiceGateway tokenServiceGateway,
+                LoanCapacityPublisherGateway loanCapacity) {
+                return new ApplyLoanUseCase(loanApplicationRepository, clientRepository, tokenServiceGateway, loanCapacity);
         }
 
         @Bean

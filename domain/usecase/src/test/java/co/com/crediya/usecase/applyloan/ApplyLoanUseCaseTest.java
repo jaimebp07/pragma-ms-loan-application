@@ -8,6 +8,7 @@ import co.com.crediya.model.loanapplication.LoanApplication;
 import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 import co.com.crediya.model.loanapplication.LoanType;
 import co.com.crediya.model.loanapplication.gateways.LoanAplicationRepository;
+import co.com.crediya.model.loanapplication.gateways.LoanCapacityPublisherGateway;
 import co.com.crediya.model.security.TokenServiceGateway;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,13 +29,15 @@ public class ApplyLoanUseCaseTest {
         private ApplyLoanUseCase applyLoanUseCase;
         private CustomerGateway clientRepository;
         private TokenServiceGateway tokenServiceGateway;
+        private LoanCapacityPublisherGateway loanCapacity;
 
         @BeforeEach
         void setUp() {
                 loanAplicationRepository = Mockito.mock(LoanAplicationRepository.class);
                 clientRepository = Mockito.mock(CustomerGateway.class);
                 tokenServiceGateway = Mockito.mock(TokenServiceGateway.class);
-                applyLoanUseCase = new ApplyLoanUseCase(loanAplicationRepository, clientRepository, tokenServiceGateway);
+                loanCapacity = Mockito.mock(LoanCapacityPublisherGateway.class);
+                applyLoanUseCase = new ApplyLoanUseCase(loanAplicationRepository, clientRepository, tokenServiceGateway, loanCapacity);
 
                 when(clientRepository.existsById(any(UUID.class))).thenReturn(Mono.just(true));
         }

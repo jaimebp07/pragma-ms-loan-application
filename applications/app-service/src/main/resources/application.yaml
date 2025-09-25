@@ -44,9 +44,15 @@ adapters:
     timeout: 5000
     url: "http://localhost:8080"
   sqs:
-    region: "us-east-2"
-    queueUrl: "https://sqs.us-east-2.amazonaws.com/484558640369/queue-loan"
-    #endpoint: "" # For localstack only
+    decisions:
+      region: "us-east-2"
+      queueUrl: "https://sqs.us-east-2.amazonaws.com/484558640369/queue-loan"
+      endpoint: # For localstack only
+    capacity:
+      region: us-east-2
+      queue-url: https://sqs.us-east-2.amazonaws.com/123456789012/loan-capacity-check
+      endpoint:
+
 
 logging:
   level:

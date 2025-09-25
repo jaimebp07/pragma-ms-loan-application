@@ -18,7 +18,6 @@ public class UpdateLoanApplicationStatusUseCase {
     private LoanAplicationRepository loanAplicationRepository;
     private final CustomerGateway customerGateway;
     private final LoanDecisionPublisherGateway loanDecisionPublisher;
-    //private final ObjectMapper objectMapper = new ObjectMapper();
 
     public UpdateLoanApplicationStatusUseCase(LoanAplicationRepository loanAplicationRepository, CustomerGateway customerGateway, LoanDecisionPublisherGateway loanDecisionPublisher){
         this.loanAplicationRepository = loanAplicationRepository;
