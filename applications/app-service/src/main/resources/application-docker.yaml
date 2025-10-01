@@ -43,6 +43,15 @@ adapters:
   restconsumer:
     timeout: 5000
     url: ${AUTHENTICATION_URL:http://ms_authentication:8080}
+  sqs:
+    capacity:
+      region: us-east-2
+      queueurl: https://sqs.us-east-2.amazonaws.com/123456789012/loan-capacity-check
+      endpoint: http://localhost:4566
+    decisions:
+      region: us-east-2
+      queueurl: https://sqs.us-east-2.amazonaws.com/484558640369/loan-capacity-check
+      endpoint: http://localhost:4566
     
 logging:
   level:

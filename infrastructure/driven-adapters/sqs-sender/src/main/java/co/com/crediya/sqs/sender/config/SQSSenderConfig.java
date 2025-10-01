@@ -1,8 +1,11 @@
 package co.com.crediya.sqs.sender.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import co.com.crediya.sqs.sender.SQSSender;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
 import software.amazon.awssdk.auth.credentials.ContainerCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
@@ -20,8 +23,18 @@ import java.net.URI;
 @ConditionalOnMissingBean(SqsAsyncClient.class)
 public class SQSSenderConfig {
 
+/* hoy
     @Bean
-    public SqsAsyncClient configSqs(SQSSenderProperties properties, MetricPublisher publisher) {
+    @ConfigurationProperties(prefix = "adapters.sqs.decisions")
+    DecisionSqsProperties decisionSqsProperties() {
+        //return new DecisionSqsProperties(null, null, null);
+        return new DecisionSqsProperties();
+    }*/
+
+    @Bean("decisionSqsClient")
+    //SqsAsyncClient configSqs(@Qualifier("decisionSqsProperties") DecisionSqsProperties properties, MetricPublisher publisher) {
+    SqsAsyncClient configSqs( DecisionSqsProperties properties, MetricPublisher publisher) {
+    
         return SqsAsyncClient.builder()
                 .endpointOverride(resolveEndpoint(properties)) // Permite localStack
                 .region(Region.of(properties.region()))
@@ -41,10 +54,17 @@ public class SQSSenderConfig {
                 .build();
     }
 
-    private URI resolveEndpoint(SQSSenderProperties properties) {
+    private URI resolveEndpoint(DecisionSqsProperties properties) {
         if (properties.endpoint() != null) {
             return URI.create(properties.endpoint());
         }
         return null;
+    }
+
+    @Bean("decisionSqsSender")
+    SQSSender decisionSqsSender(
+            @Qualifier("decisionSqsClient") SqsAsyncClient client,
+            DecisionSqsProperties props) {
+        return new SQSSender(props, client);
     }
 }

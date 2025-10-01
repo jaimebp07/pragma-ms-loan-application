@@ -73,7 +73,7 @@ public class GetLoanApplicationsUseCaseTest {
         when(customerGateway.findByIdList(Set.of(clientId)))
                 .thenReturn(Mono.just(Set.of(customer)));
 
-        LoanAplicationFilter filter = new LoanAplicationFilter(Optional.empty(), Optional.empty());
+        LoanAplicationFilter filter = new LoanAplicationFilter(Optional.empty(), Optional.empty(), Optional.empty());
 
         StepVerifier.create(useCase.findPaged(0, 5, filter))
                 .assertNext(result -> {
@@ -101,7 +101,7 @@ public class GetLoanApplicationsUseCaseTest {
         when(evaluationGateway.count(any()))
                 .thenReturn(Mono.just(0L));
 
-        LoanAplicationFilter filter = new LoanAplicationFilter(Optional.empty(), Optional.empty());
+        LoanAplicationFilter filter = new LoanAplicationFilter(Optional.empty(), Optional.empty(), Optional.empty());
 
         StepVerifier.create(useCase.findPaged(1, 5, filter))
                 .expectErrorSatisfies(err -> {
@@ -139,7 +139,7 @@ public class GetLoanApplicationsUseCaseTest {
         when(customerGateway.findByIdList(Set.of(clientId)))
                 .thenReturn(Mono.just(Set.of()));
 
-        LoanAplicationFilter filter = new LoanAplicationFilter(Optional.empty(), Optional.empty());
+        LoanAplicationFilter filter = new LoanAplicationFilter(Optional.empty(), Optional.empty(), Optional.empty());
 
         StepVerifier.create(useCase.findPaged(0, 5, filter))
                 .assertNext(result -> {

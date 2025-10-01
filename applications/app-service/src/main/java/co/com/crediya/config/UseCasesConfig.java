@@ -21,8 +21,9 @@ public class UseCasesConfig {
                 LoanAplicationRepository loanApplicationRepository,
                 CustomerGateway clientRepository, 
                 TokenServiceGateway tokenServiceGateway,
-                LoanCapacityPublisherGateway loanCapacity) {
-                return new ApplyLoanUseCase(loanApplicationRepository, clientRepository, tokenServiceGateway, loanCapacity);
+                LoanCapacityPublisherGateway loanCapacity,
+                EvaluationLoanApplicationGateway evaluationLoanApplicationGateway) {
+                return new ApplyLoanUseCase(loanApplicationRepository, clientRepository, tokenServiceGateway, loanCapacity, evaluationLoanApplicationGateway);
         }
 
         @Bean

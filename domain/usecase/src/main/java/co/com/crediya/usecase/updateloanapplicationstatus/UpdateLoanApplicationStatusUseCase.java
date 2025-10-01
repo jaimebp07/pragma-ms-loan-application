@@ -28,8 +28,6 @@ public class UpdateLoanApplicationStatusUseCase {
     public Mono<EvaluationLoanApplication> updateLoanApplicationStatus(UUID loanApplicationID, LoanApplicationStatus status, Optional<String> comment) {
         return loanAplicationRepository.updateLoanAplicationStatus(loanApplicationID, status, comment)
         .flatMap( loan -> {
-
-                
                 Set<UUID> customerId = new HashSet<>(Set.of(loan.getClientId()));
                 customerGateway.findByIdList(customerId);
 

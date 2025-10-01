@@ -46,6 +46,10 @@ public class EvaluationLoanApplicationRepositoryAdapter implements EvaluationLoa
             spec = spec.bind("loanType", filter.loanType().get().name());
         }
 
+        if(filter.customerId().isPresent()) {
+            spec = spec.bind("clientId", filter.customerId().get());
+        }
+
         return spec.map((row, metadata) -> {
             LoanApplication loan = new LoanApplication.Builder()
                     .id(row.get("loan_id", UUID.class))
@@ -87,6 +91,10 @@ public class EvaluationLoanApplicationRepositoryAdapter implements EvaluationLoa
         }
         if (filter.loanType().isPresent()) {
             conditions.add("lt.name = :loanType");
+        }
+
+        if (filter.customerId().isPresent()) {
+            conditions.add("la.client_id = :clientId");
         }
 
         if (!conditions.isEmpty()) {

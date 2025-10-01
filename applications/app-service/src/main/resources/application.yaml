@@ -45,14 +45,16 @@ adapters:
     url: "http://localhost:8080"
   sqs:
     decisions:
-      region: "us-east-2"
-      queueUrl: "https://sqs.us-east-2.amazonaws.com/484558640369/queue-loan"
-      endpoint: # For localstack only
+      region: us-east-2
+      queueurl: https://sqs.us-east-2.amazonaws.com/484558640369/queue-loan
+      #endpoint: # For localstack only
     capacity:
       region: us-east-2
-      queue-url: https://sqs.us-east-2.amazonaws.com/123456789012/loan-capacity-check
-      endpoint:
-
+      queueurl: https://sqs.us-east-2.amazonaws.com/484558640369/loan-capacity-check
+      #endpoint:
+    capacity-result:
+      result-queue-url: "https://sqs.us-east-2.amazonaws.com/484558640369/loan-capacity-result-queue"
+      region: "us-east-2"
 
 logging:
   level:
