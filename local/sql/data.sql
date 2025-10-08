@@ -14,30 +14,30 @@ VALUES
 ('75e927cc-9058-41e9-812d-1abfe3ccb92d', '9cf91033-f501-4abc-9ca8-6fe16757cc92', 1500000.00, 12, 'a8f5d1a4-6b1b-4f39-8fa4-2c4dbd38d13e', 'APPROVED'),
 (gen_random_uuid(), '3c59f39e-0a32-4d07-9a0b-fcd038e2e802', 3000000.00, 24, 'b3f2c13d-29c5-4c5e-93f1-1c8a7a63d0e9', 'APPROVED'),
 (gen_random_uuid(), '4e3f5b9b-8e5d-4a76-b394-2f1a6a3d5c7f', 8000000.00, 18, 'c47b9182-bc7d-4b86-b3e1-08f3b7e5d2a4', 'APPROVED'),
-(gen_random_uuid(), 'da187d87-1dc1-40fd-a2f0-3ac91a8f80fb', 5000000.00, 36, 'd1f27b71-9c46-4aa1-9f0e-3f4b1c693b90', 'APPROVED'); --Diana
-(gen_random_uuid(), 'f5a31f6e-cd3f-44f7-bf11-0dbad81b5b59',  12000000.00, 12, 'a8f5d1a4-6b1b-4f39-8fa4-2c4dbd38d13e', 'APPROVED'); --Mateo
+(gen_random_uuid(), 'da187d87-1dc1-40fd-a2f0-3ac91a8f80fb', 5000000.00, 36, 'd1f27b71-9c46-4aa1-9f0e-3f4b1c693b90', 'APPROVED'), --Diana
+(gen_random_uuid(), 'f5a31f6e-cd3f-44f7-bf11-0dbad81b5b59',  12000000.00, 12, 'a8f5d1a4-6b1b-4f39-8fa4-2c4dbd38d13e', 'APPROVED'), --Mateo
 
 -- 4 solicitudes con estado REJECTED
-INSERT INTO credi_ya.loan_applications
-(id, client_id, amount, term, loan_type_id, status)
-VALUES
+--INSERT INTO credi_ya.loan_applications
+--(id, client_id, amount, term, loan_type_id, status)
+--VALUES
 ('976799c1-c5e6-448f-b338-122da1895ecc', '3c59f39e-0a32-4d07-9a0b-fcd038e2e802', 200000.00, 6,  'e73c9d29-2e6e-4dc0-bf07-41b77d43a1c2', 'REJECTED'),
 (gen_random_uuid(), '4e3f5b9b-8e5d-4a76-b394-2f1a6a3d5c7f', 7000.00, 12, 'a8f5d1a4-6b1b-4f39-8fa4-2c4dbd38d13e', 'REJECTED'),
 (gen_random_uuid(), '7b49d4a5-293a-4fcb-95f2-f0af59e196fd', 25000.00, 24, 'b3f2c13d-29c5-4c5e-93f1-1c8a7a63d0e9', 'REJECTED'),
-(gen_random_uuid(), '0c6485b6-6b3a-4bdb-823e-0a8d71a3e7de', 120000000.00, 48, 'f5a3d884-0fd8-4c1f-9de1-92bb8fa57ab3', 'REJECTED');
+(gen_random_uuid(), '0c6485b6-6b3a-4bdb-823e-0a8d71a3e7de', 120000000.00, 48, 'f5a3d884-0fd8-4c1f-9de1-92bb8fa57ab3', 'REJECTED'),
 
 -- 4 solicitudes con estado PENDING
-INSERT INTO credi_ya.loan_applications
-(id, client_id, amount, term, loan_type_id, status)
-VALUES
+--INSERT INTO credi_ya.loan_applications
+--(id, client_id, amount, term, loan_type_id, status)
+--VALUES
 (gen_random_uuid(), '9cf91033-f501-4abc-9ca8-6fe16757cc92', 2000000.00, 6,  'e73c9d29-2e6e-4dc0-bf07-41b77d43a1c2', 'PENDING'),
 (gen_random_uuid(), '4e3f5b9b-8e5d-4a76-b394-2f1a6a3d5c7f', 5000.00, 12, 'c47b9182-bc7d-4b86-b3e1-08f3b7e5d2a4', 'PENDING'),
 (gen_random_uuid(), '0c6485b6-6b3a-4bdb-823e-0a8d71a3e7de', 18000000.00, 24, 'b3f2c13d-29c5-4c5e-93f1-1c8a7a63d0e9', 'PENDING'),
-(gen_random_uuid(), '3c59f39e-0a32-4d07-9a0b-fcd038e2e802', 45000.00, 36, 'a8f5d1a4-6b1b-4f39-8fa4-2c4dbd38d13e', 'PENDING');
+(gen_random_uuid(), '3c59f39e-0a32-4d07-9a0b-fcd038e2e802', 45000.00, 36, 'a8f5d1a4-6b1b-4f39-8fa4-2c4dbd38d13e', 'PENDING'),
 
-INSERT INTO credi_ya.loan_applications
-(id, client_id, amount, term, loan_type_id, status)
-VALUES
+--INSERT INTO credi_ya.loan_applications
+--(id, client_id, amount, term, loan_type_id, status)
+--VALUES
 ('b92429f7-51e9-4252-b0a0-ea71d89af000', '7b49d4a5-293a-4fcb-95f2-f0af59e196fd',  8500000.00, 12, 'a8f5d1a4-6b1b-4f39-8fa4-2c4dbd38d13e', 'PENDING'),
 ('f33bc594-164f-4479-8c7f-65f8b87a1201', '93d75c8d-7414-4900-b5e5-ccf1c9e62a40', 12000000.00, 24, 'b3f2c13d-29c5-4c5e-93f1-1c8a7a63d0e9', 'PENDING'),
 ('469d4fc0-f195-439a-ad78-0c7c4555a44c', 'a6fa4c1e-6be7-4a6b-9391-82e646d92d60',  2500000.00, 18, 'c47b9182-bc7d-4b86-b3e1-08f3b7e5d2a4', 'PENDING'),
