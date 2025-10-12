@@ -1,8 +1,8 @@
-package co.com.crediya.sqs.sender;
+package co.com.crediya.sqs.sender.common;
 
-import co.com.crediya.sqs.sender.config.CapacitySqsProperties;
-import co.com.crediya.sqs.sender.config.DecisionSqsProperties;
-import co.com.crediya.sqs.sender.config.SqsProperties;
+import co.com.crediya.sqs.sender.common.config.SqsProperties;
+import co.com.crediya.sqs.sender.debtCapacityCalculation.properties.CapacitySqsProperties;
+import co.com.crediya.sqs.sender.decision.properties.DecisionSqsProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Mono;

@@ -1,23 +1,25 @@
-package co.com.crediya.sqs.sender;
+package co.com.crediya.sqs.sender.debtCapacityCalculation;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 import co.com.crediya.model.loanapplication.gateways.LoanCapacityPublisherGateway;
+import co.com.crediya.sqs.sender.common.SQSSender;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Mono;
 
 @Component
 @Log4j2
-public class LoanCapacityPublisherAdapter  implements LoanCapacityPublisherGateway {
+public class CapacityCalculationPublisherAdapter  implements LoanCapacityPublisherGateway {
 
     private final SQSSender sqsSender;
 
-     public LoanCapacityPublisherAdapter(@Qualifier("capacitySqsSender") SQSSender sqsSender) {
+     public CapacityCalculationPublisherAdapter(@Qualifier("capacitySqsSender") SQSSender sqsSender) {
         this.sqsSender = sqsSender;
     }
 
+    
     @Override
     public Mono<LoanApplicationStatus> validateLoanPublish(String eventJson) {
         log.info("Enviando mensaje a SQS para validación de capacidad: {}", eventJson);

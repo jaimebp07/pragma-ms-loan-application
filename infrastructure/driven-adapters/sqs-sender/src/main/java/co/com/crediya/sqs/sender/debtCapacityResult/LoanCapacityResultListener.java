@@ -1,4 +1,4 @@
-package co.com.crediya.sqs.sender;
+package co.com.crediya.sqs.sender.debtCapacityResult;
 
 
 import java.time.Duration;
@@ -8,8 +8,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
-import co.com.crediya.sqs.sender.config.CapacityResultProperties;
-import lombok.RequiredArgsConstructor;
+import co.com.crediya.sqs.sender.debtCapacityResult.properties.CapacityResultSqsProperties;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,10 +19,10 @@ import software.amazon.awssdk.services.sqs.model.Message;
 @Log4j2
 public class LoanCapacityResultListener implements ApplicationListener<ApplicationReadyEvent> {
 
-    private final @Qualifier("capacitySqsClient") SqsAsyncClient sqsClient;
-    private final CapacityResultProperties properties; // contiene la URL de la cola de resultados
+    private final SqsAsyncClient sqsClient;
+    private final CapacityResultSqsProperties properties;
 
-    public LoanCapacityResultListener(@Qualifier("capacitySqsClient") SqsAsyncClient sqsClient, CapacityResultProperties properties){
+    public LoanCapacityResultListener(@Qualifier("capacityResultSqsClient") SqsAsyncClient sqsClient, CapacityResultSqsProperties properties){
         this.sqsClient = sqsClient;
         this.properties = properties;
     }
@@ -43,7 +42,7 @@ public class LoanCapacityResultListener implements ApplicationListener<Applicati
             .flatMap(tick ->
                 Mono.fromFuture(() ->
                     sqsClient.receiveMessage(r -> r
-                        .queueUrl(properties.getResultQueueUrl())
+                        .queueUrl(properties.queueurl())
                         .waitTimeSeconds(10)
                         .maxNumberOfMessages(5))))
             .flatMapIterable(resp -> resp.messages())
@@ -60,7 +59,7 @@ public class LoanCapacityResultListener implements ApplicationListener<Applicati
 
             return Mono.fromFuture(() ->
                 sqsClient.deleteMessage(r -> r
-                    .queueUrl(properties.getResultQueueUrl())
+                    .queueUrl(properties.queueurl())
                     .receiptHandle(msg.receiptHandle())))
                 .then();
         } catch (Exception e) {
