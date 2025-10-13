@@ -1,16 +1,13 @@
 package co.com.crediya.sqs.sender.debtCapacityResult;
 
-
-import java.time.Duration;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
+import co.com.crediya.sqs.sender.common.SQSListener;
 import co.com.crediya.sqs.sender.debtCapacityResult.properties.CapacityResultSqsProperties;
 import lombok.extern.log4j.Log4j2;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.Message;
@@ -21,8 +18,13 @@ public class LoanCapacityResultListener implements ApplicationListener<Applicati
 
     private final SqsAsyncClient sqsClient;
     private final CapacityResultSqsProperties properties;
+    private final SQSListener sqsListener;
 
-    public LoanCapacityResultListener(@Qualifier("capacityResultSqsClient") SqsAsyncClient sqsClient, CapacityResultSqsProperties properties){
+    public LoanCapacityResultListener(
+        SQSListener sqsListener,
+        @Qualifier("capacityResultSqsClient") SqsAsyncClient sqsClient, 
+        CapacityResultSqsProperties properties){
+        this.sqsListener = sqsListener;
         this.sqsClient = sqsClient;
         this.properties = properties;
     }
@@ -34,34 +36,15 @@ public class LoanCapacityResultListener implements ApplicationListener<Applicati
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         log.info("Iniciando listener de resultados de capacidad de crédito...");
-        startListening();
-    }
-
-    private void startListening() {
-        Flux.interval(Duration.ofSeconds(5))
-            .flatMap(tick ->
-                Mono.fromFuture(() ->
-                    sqsClient.receiveMessage(r -> r
-                        .queueUrl(properties.queueurl())
-                        .waitTimeSeconds(10)
-                        .maxNumberOfMessages(5))))
-            .flatMapIterable(resp -> resp.messages())
-            .flatMap(this::processMessage)
-            .onErrorContinue((err, obj) ->
-                log.error("Error al recibir mensajes de SQS", err))
-            .subscribe();
+        sqsListener.startListening(sqsClient, properties.queueurl(), this::processMessage);
     }
 
     private Mono<Void> processMessage(Message msg) {
-        try {
+         try {
             String json = msg.body();
             log.info("Resultado de capacidad recibido: {}", json);
 
-            return Mono.fromFuture(() ->
-                sqsClient.deleteMessage(r -> r
-                    .queueUrl(properties.queueurl())
-                    .receiptHandle(msg.receiptHandle())))
-                .then();
+            return sqsListener.deleteMessage(sqsClient, properties.queueurl(), msg);
         } catch (Exception e) {
             log.error("Error procesando mensaje de SQS", e);
             return Mono.empty();
