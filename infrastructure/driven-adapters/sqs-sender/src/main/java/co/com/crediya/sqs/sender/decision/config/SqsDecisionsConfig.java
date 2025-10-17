@@ -30,6 +30,7 @@ public class SqsDecisionsConfig {
     SQSSender decisionSender(
             @Qualifier("decisionSqsClient") SqsAsyncClient client,
             DecisionSqsProperties props) {
+        System.out.println("----------------------> Decision SQS URL: " + props.queueurl());
         return baseConfig.buildSender(props, client);
     }
 }

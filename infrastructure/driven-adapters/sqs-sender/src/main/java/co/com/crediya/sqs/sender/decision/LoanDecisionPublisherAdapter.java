@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public class LoanDecisionPublisherAdapter implements LoanDecisionPublisherGateway {
 
     private final SQSSender sqsSender;
-//
+
     public LoanDecisionPublisherAdapter(@Qualifier("decisionSqsSender") SQSSender sqsSender) {
         this.sqsSender = sqsSender;
     }
