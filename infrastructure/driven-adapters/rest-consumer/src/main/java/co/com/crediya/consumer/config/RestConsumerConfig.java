@@ -45,7 +45,7 @@ public class RestConsumerConfig {
 
     private ExchangeFilterFunction logRequest() {
         return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-            log.info("Enviando petición a la URL completa: {}", clientRequest.url());
+            log.info("-------> Enviando petición a la URL completa: {}", clientRequest.url());
             return Mono.just(clientRequest);
         });
     }

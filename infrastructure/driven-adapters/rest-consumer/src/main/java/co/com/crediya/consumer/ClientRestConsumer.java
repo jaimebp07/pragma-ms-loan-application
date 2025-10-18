@@ -1,7 +1,6 @@
 package co.com.crediya.consumer;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
@@ -24,11 +23,16 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ClientRestConsumer implements CustomerGateway {
 
-    private final @Qualifier("authWebClient") WebClient client;
+    private final WebClient client;
     private final TokenServiceGateway tokenService;
+
+    public ClientRestConsumer(@Qualifier("authWebClient") WebClient client,
+                              TokenServiceGateway tokenService) {
+        this.client = client;
+        this.tokenService = tokenService;
+    }
 
     @Override
     @CircuitBreaker(name = "clientService", fallbackMethod = "fallbackExistsById")
