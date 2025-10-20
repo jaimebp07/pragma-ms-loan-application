@@ -7,6 +7,7 @@ import co.com.crediya.api.mapper.PageResultMapper;
 import co.com.crediya.model.exceptions.BusinessException;
 import co.com.crediya.model.exceptions.ErrorCode;
 import co.com.crediya.model.loanapplication.LoanApplication;
+import co.com.crediya.model.loanapplication.LoanApplicationStatus;
 import co.com.crediya.model.loanapplication.LoanType;
 import co.com.crediya.usecase.applyloan.ApplyLoanUseCase;
 import co.com.crediya.usecase.getloanapplications.GetLoanApplicationsUseCase;
@@ -53,6 +54,8 @@ class HandlerV1Test {
 
     @Test
     void testApplyLoanSuccess() {
+        UUID expectedLoanId = UUID.randomUUID();
+
         ApplyLoanRqDTO requestDto = new ApplyLoanRqDTO(
                 UUID.randomUUID(),
                 BigDecimal.valueOf(1000),
@@ -61,14 +64,15 @@ class HandlerV1Test {
         );
 
         LoanApplication loanAplication = new LoanApplication.Builder()
-                .clientId(requestDto.clientId())
+                .clientId(expectedLoanId)
                 .amount(requestDto.amount())
                 .term(requestDto.term())
                 .loanType(requestDto.loanType())
+                .status(LoanApplicationStatus.PENDING)
                 .build();
 
         ApplyLoanRsDTO responseDto = new ApplyLoanRsDTO(
-                UUID.randomUUID(),
+                expectedLoanId,
                 requestDto.clientId(),
                 requestDto.amount(),
                 requestDto.term(),

@@ -2,7 +2,6 @@ package co.com.crediya.api.security;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
@@ -19,9 +18,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 public class TokenServiceAdapter implements TokenServiceGateway {
     
     private static final Logger log = LoggerFactory.getLogger(TokenServiceAdapter.class);
-
-    @Value("${jwt.secret}")
-    private String secret;
 
     @Override
     public Mono<UUID> getAuthUserId() {

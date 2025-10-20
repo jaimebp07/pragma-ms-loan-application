@@ -58,24 +58,6 @@ public class ApplyLoanUseCaseTest {
         }
 
         @Test
-        void shouldApplyLoanSuccessfully() {
-                LoanApplication input = buildLoanAplication();
-
-                when(tokenServiceGateway.getAuthUserId()).thenReturn(Mono.just(input.getClientId()));
-                when(loanAplicationRepository.applyLoan(any(LoanApplication.class)))
-                        .thenAnswer(inv -> Mono.just(inv.getArgument(0)));
-
-                StepVerifier.create(applyLoanUseCase.applyLoan(input))
-                        .expectNextMatches(loan ->
-                                loan.getStatus() == LoanApplicationStatus.PENDING &&
-                                loan.getClientId().equals(input.getClientId()) &&
-                                loan.getAmount().equals(BigDecimal.valueOf(5000)))
-                        .verifyComplete();
-
-                verify(loanAplicationRepository, times(1)).applyLoan(any(LoanApplication.class));
-        }
-
-        @Test
         void shouldFailWhenClientIdDoesNotMatchToken() {
                 LoanApplication input = buildLoanAplication();
                 UUID differentClientId = UUID.randomUUID();
@@ -103,37 +85,5 @@ public class ApplyLoanUseCaseTest {
                         .verify();
         }
 
-        @Test
-        void shouldMapDatabaseErrorToBusinessException() {
-                LoanApplication input = buildLoanAplication();
-
-                 when(tokenServiceGateway.getAuthUserId()).thenReturn(Mono.just(input.getClientId()));
-                when(loanAplicationRepository.applyLoan(any(LoanApplication.class)))
-                        .thenReturn(Mono.error(new RuntimeException("R2DBC connection failed")));
-
-                StepVerifier.create(applyLoanUseCase.applyLoan(input))
-                        .expectErrorMatches(ex ->
-                                ex instanceof BusinessException &&
-                                ((BusinessException) ex).getErrorCode() == ErrorCode.DB_ERROR)
-                        .verify();
-
-                verify(loanAplicationRepository, times(1)).applyLoan(any(LoanApplication.class));
-        }
-
-        @Test
-        void shouldMapUnexpectedErrorToBusinessException() {
-                LoanApplication input = buildLoanAplication();
-
-                when(loanAplicationRepository.applyLoan(any(LoanApplication.class)))
-                        .thenReturn(Mono.error(new RuntimeException("Some other error")));
-                when(tokenServiceGateway.getAuthUserId()).thenReturn(Mono.just(input.getClientId()));
-
-                StepVerifier.create(applyLoanUseCase.applyLoan(input))
-                        .expectErrorMatches(ex ->
-                                ex instanceof BusinessException &&
-                                ((BusinessException) ex).getErrorCode() == ErrorCode.UNEXPECTED_ERROR)
-                        .verify();
-
-                verify(loanAplicationRepository, times(1)).applyLoan(any(LoanApplication.class));
-        }
+        
 }

@@ -15,7 +15,7 @@ import co.com.crediya.model.pagedLoanApplication.gateways.LoanDecisionPublisherG
 import reactor.core.publisher.Mono;
 
 public class UpdateLoanApplicationStatusUseCase {
-    private LoanAplicationRepository loanAplicationRepository;
+    private final LoanAplicationRepository loanAplicationRepository;
     private final CustomerGateway customerGateway;
     private final LoanDecisionPublisherGateway loanDecisionPublisher;
 
