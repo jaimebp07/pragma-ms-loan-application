@@ -2,7 +2,7 @@ server:
   port: 8082
 spring:
   application:
-    name: "ms_loanapplications"
+    name: "msLoanApplications"
   devtools:
     add-properties: false
   h2:
