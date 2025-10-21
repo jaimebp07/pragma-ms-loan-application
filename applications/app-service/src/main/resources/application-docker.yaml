@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: "LoanApplication"
+    name: "ms_loanapplications"
   devtools:
     add-properties: false
   h2:

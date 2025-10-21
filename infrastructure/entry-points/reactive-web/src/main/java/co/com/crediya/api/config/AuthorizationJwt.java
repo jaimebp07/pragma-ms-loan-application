@@ -37,7 +37,7 @@ public class AuthorizationJwt implements WebFluxConfigurer {
 
     private final String secret;
 
-    public AuthorizationJwt(@Value("${security.jwt.secret}") String secret) {
+    public AuthorizationJwt(@Value("${jwt.secret}") String secret) {
         this.secret = secret;
     }
 
