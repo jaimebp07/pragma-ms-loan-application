@@ -1,13 +1,17 @@
 package co.com.crediya.r2dbc;
 
+import co.com.crediya.model.exceptions.BusinessException;
+import co.com.crediya.model.exceptions.ErrorCode;
 import co.com.crediya.model.loanapplication.LoanApplication;
 import co.com.crediya.model.loanapplication.LoanApplicationStatus;
+import co.com.crediya.model.loanapplication.LoanType;
 import co.com.crediya.model.loanapplication.gateways.LoanAplicationRepository;
 import co.com.crediya.r2dbc.entity.LoanAplicationEntity;
 import co.com.crediya.r2dbc.mapper.LoanAplicationMapper;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,5 +67,21 @@ public class LoanAplicationRepositoryAdapter implements LoanAplicationRepository
         .doOnSuccess(updated ->
             log.info("Status updated: id={}, newStatus={}", updated.getId(), updated.getStatus())
         );
+    }
+
+    @Override
+    public Mono<Boolean> isAutomaticValidation(LoanType loanType) {
+    return repository.findAutomaticValidationByLoanTypeId(loanType.getLoanTypeId())
+        .switchIfEmpty(Mono.error(new BusinessException(
+            ErrorCode.LOAN_TYPE_NOT_FOUND,
+            "Tipo de préstamo no encontrado: " + loanType.name()
+        )));
+    }
+
+    @Override
+    public Mono<List<LoanApplication>> getLoansAprovedByCustomer(UUID customerId) {
+        return repository.findApprovedLoansByClientId(customerId)
+            .map(LoanAplicationMapper::toDomain)
+            .collectList(); 
     }
 }

@@ -1,13 +1,12 @@
 package co.com.crediya.consumer;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -24,11 +23,16 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ClientRestConsumer implements CustomerGateway {
 
     private final WebClient client;
     private final TokenServiceGateway tokenService;
+
+    public ClientRestConsumer(@Qualifier("authWebClient") WebClient client,
+                              TokenServiceGateway tokenService) {
+        this.client = client;
+        this.tokenService = tokenService;
+    }
 
     @Override
     @CircuitBreaker(name = "clientService", fallbackMethod = "fallbackExistsById")
@@ -56,7 +60,7 @@ public class ClientRestConsumer implements CustomerGateway {
         }
         return resp.createException().flatMap(Mono::error);
     }
-
+ 
     @Override
     @CircuitBreaker(name = "clientService", fallbackMethod = "fallbackFindByIdList")
     public Mono<Set<Customer>> findByIdList(Set<UUID> customerIds) {
@@ -90,7 +94,7 @@ public class ClientRestConsumer implements CustomerGateway {
     }
 
     @SuppressWarnings("unused")
-    private Mono<Set<User>> fallbackFindByIdList(Set<UUID> ids, Throwable ex) {
+    private Mono<Set<Customer>> fallbackFindByIdList(Set<UUID> ids, Throwable ex) {
         log.error("Fallback for findByIdList: {}", ex.getMessage());
         return Mono.error(new RuntimeException("User service unavailable", ex));
     }

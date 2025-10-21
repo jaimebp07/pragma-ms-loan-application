@@ -15,10 +15,9 @@ import co.com.crediya.model.pagedLoanApplication.gateways.LoanDecisionPublisherG
 import reactor.core.publisher.Mono;
 
 public class UpdateLoanApplicationStatusUseCase {
-    private LoanAplicationRepository loanAplicationRepository;
+    private final LoanAplicationRepository loanAplicationRepository;
     private final CustomerGateway customerGateway;
     private final LoanDecisionPublisherGateway loanDecisionPublisher;
-    //private final ObjectMapper objectMapper = new ObjectMapper();
 
     public UpdateLoanApplicationStatusUseCase(LoanAplicationRepository loanAplicationRepository, CustomerGateway customerGateway, LoanDecisionPublisherGateway loanDecisionPublisher){
         this.loanAplicationRepository = loanAplicationRepository;
@@ -29,8 +28,6 @@ public class UpdateLoanApplicationStatusUseCase {
     public Mono<EvaluationLoanApplication> updateLoanApplicationStatus(UUID loanApplicationID, LoanApplicationStatus status, Optional<String> comment) {
         return loanAplicationRepository.updateLoanAplicationStatus(loanApplicationID, status, comment)
         .flatMap( loan -> {
-
-                
                 Set<UUID> customerId = new HashSet<>(Set.of(loan.getClientId()));
                 customerGateway.findByIdList(customerId);
 

@@ -2,18 +2,24 @@ package co.com.crediya.consumer.config;
 
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+@Slf4j
 @Configuration
 public class RestConsumerConfig {
 
@@ -27,13 +33,21 @@ public class RestConsumerConfig {
         this.timeout = timeout;
     }
 
-    @Bean
+    @Bean("authWebClient")
     WebClient getWebClient(WebClient.Builder builder) {
         return builder
             .baseUrl(url)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json")
             .clientConnector(getClientHttpConnector())
+            .filter(logRequest())
             .build();
+    }
+
+    private ExchangeFilterFunction logRequest() {
+        return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
+            log.info("----------> Enviando petición a la URL completa: {}", clientRequest.url());
+            return Mono.just(clientRequest);
+        });
     }
 
     private ClientHttpConnector getClientHttpConnector() {

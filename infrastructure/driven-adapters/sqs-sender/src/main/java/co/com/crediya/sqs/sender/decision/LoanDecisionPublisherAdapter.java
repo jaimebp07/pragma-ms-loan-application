@@ -1,16 +1,20 @@
-package co.com.crediya.sqs.sender;
+package co.com.crediya.sqs.sender.decision;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import co.com.crediya.model.pagedLoanApplication.gateways.LoanDecisionPublisherGateway;
-import lombok.RequiredArgsConstructor;
+import co.com.crediya.sqs.sender.common.SQSSender;
 import reactor.core.publisher.Mono;
 
 @Component
-@RequiredArgsConstructor
 public class LoanDecisionPublisherAdapter implements LoanDecisionPublisherGateway {
 
     private final SQSSender sqsSender;
+
+    public LoanDecisionPublisherAdapter(@Qualifier("decisionSqsSender") SQSSender sqsSender) {
+        this.sqsSender = sqsSender;
+    }
 
     @Override
     public Mono<String> publish(String eventJson) {

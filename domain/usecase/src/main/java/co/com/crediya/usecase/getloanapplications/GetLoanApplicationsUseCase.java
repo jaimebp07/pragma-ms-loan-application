@@ -1,7 +1,5 @@
 package co.com.crediya.usecase.getloanapplications;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -11,16 +9,14 @@ import co.com.crediya.model.customer.Customer;
 import co.com.crediya.model.customer.gateways.CustomerGateway;
 import co.com.crediya.model.exceptions.BusinessException;
 import co.com.crediya.model.exceptions.ErrorCode;
-import co.com.crediya.model.loanapplication.LoanApplication;
 import co.com.crediya.model.loanapplication.filter.LoanAplicationFilter;
 import co.com.crediya.model.pagedLoanApplication.EvaluationLoanApplication;
 import co.com.crediya.model.pagedLoanApplication.PageResult;
 import co.com.crediya.model.pagedLoanApplication.gateways.EvaluationLoanApplicationGateway;
+import co.com.crediya.usecase.utils.Utils;
 import reactor.core.publisher.Mono;
 
 public class GetLoanApplicationsUseCase {
-
-    private static final int SCALE = 2;
 
     private final EvaluationLoanApplicationGateway repository;
     private final CustomerGateway customerGateway;
@@ -76,26 +72,11 @@ public class GetLoanApplicationsUseCase {
                             .email(customer.email())
                             .baseSalary(customer.baseSalary())
                             .monthlyAmountLoanApplication(
-                                calculateMonthlyAmount(eval.getLoanApplication(), eval.getInterestRate())
+                                Utils.calculateMonthlyAmount(eval.getLoanApplication(), eval.getInterestRate())
                             )
                             .build();
                 })
                 .toList();
-    }
-
-    private BigDecimal calculateMonthlyAmount(LoanApplication loan, BigDecimal interestRate) {
-
-        BigDecimal interest = loan.getAmount()
-                                    .multiply(interestRate)
-                                    .divide(BigDecimal.valueOf(100), SCALE + 2, RoundingMode.HALF_UP);
-
-        BigDecimal totalWithInterest = loan.getAmount().add(interest);
-
-        return totalWithInterest.divide(
-                BigDecimal.valueOf(loan.getTerm()),
-                SCALE,
-                RoundingMode.HALF_UP
-        );
     }
 
     private Set<UUID> getIdFromLoanList(List<EvaluationLoanApplication> loans) {

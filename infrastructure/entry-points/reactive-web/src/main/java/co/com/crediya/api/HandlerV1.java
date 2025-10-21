@@ -20,6 +20,7 @@ import co.com.crediya.usecase.getloanapplications.GetLoanApplicationsUseCase;
 import co.com.crediya.usecase.updateloanapplicationstatus.UpdateLoanApplicationStatusUseCase;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -75,12 +76,14 @@ public class HandlerV1 {
                 int size = Integer.parseInt(serverRequest.queryParam("size").orElse("20"));
                 String status = serverRequest.queryParam("status").orElse(null);
                 String loanType = serverRequest.queryParam("loanType").orElse(null);
+                String customerId = serverRequest.queryParam("customerId").orElse(null);
 
                 LoanAplicationFilter filter;
                 try {
                         filter = new LoanAplicationFilter(
                                 Optional.ofNullable(status).map(LoanApplicationStatus::fromValue),
-                                Optional.ofNullable(loanType).map(LoanType::fromValue)
+                                Optional.ofNullable(loanType).map(LoanType::fromValue),
+                                Optional.ofNullable(customerId).map(UUID::fromString)
                         );
                 } catch (BusinessException ex) {
                         log.warn("Invalid filter: ", ex);

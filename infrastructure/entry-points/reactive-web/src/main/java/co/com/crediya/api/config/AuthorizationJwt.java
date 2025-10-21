@@ -32,11 +32,14 @@ import lombok.extern.log4j.Log4j2;
 @EnableReactiveMethodSecurity
 public class AuthorizationJwt implements WebFluxConfigurer {
 
-    @Value("${jwt.secret}")
-    private String secret;
-
 
     private static final String ROLE = "ROLE_";
+
+    private final String secret;
+
+    public AuthorizationJwt(@Value("${jwt.secret}") String secret) {
+        this.secret = secret;
+    }
 
     @Bean
     @Order(1)

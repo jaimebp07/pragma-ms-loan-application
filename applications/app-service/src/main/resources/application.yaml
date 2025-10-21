@@ -2,7 +2,7 @@ server:
   port: 8082
 spring:
   application:
-    name: "LoanApplication"
+    name: "ms_loanapplications"
   devtools:
     add-properties: false
   h2:
@@ -44,9 +44,17 @@ adapters:
     timeout: 5000
     url: "http://localhost:8080"
   sqs:
-    region: "us-east-2"
-    queueUrl: "https://sqs.us-east-2.amazonaws.com/484558640369/queue-loan"
-    #endpoint: "" # For localstack only
+    decisions:
+      region: us-east-2
+      queueurl: https://sqs.us-east-2.amazonaws.com/484558640369/queue-loan
+      #endpoint: # For localstack only
+    capacity-calculation:
+      region: us-east-2
+      queueurl: https://sqs.us-east-2.amazonaws.com/484558640369/loan-capacity-check
+      #endpoint:
+    capacity-result:
+      queueurl: "https://sqs.us-east-2.amazonaws.com/484558640369/loan-capacity-result-queue"
+      region: "us-east-2"
 
 logging:
   level:
@@ -70,4 +78,3 @@ resilience4j:
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
         waitDurationInOpenState: "10s"
-  

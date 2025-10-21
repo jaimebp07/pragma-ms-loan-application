@@ -6,7 +6,8 @@ public enum LoanApplicationStatus {
 
     APPROVED ("Approved"),
     REJECTED ("Rejected"),
-    PENDING ("Pending");
+    PENDING ("Pending"),
+    MANUAL_REVIEW ("Manual review");
 
     private final String description;
 
