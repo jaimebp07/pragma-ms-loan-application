@@ -12,7 +12,7 @@ buildCache {
     }
 }
 
-rootProject.name = 'ms_loanapplications'
+rootProject.name = 'msLoanApplications'
 
 include ':app-service'
 include ':model'
