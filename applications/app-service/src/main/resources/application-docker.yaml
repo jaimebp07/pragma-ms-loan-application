@@ -34,15 +34,15 @@ cors:
 
 adapters:
   r2dbc:
-    host: ${DB_HOST:db_loanapplications}
+    host: ${DB_HOST:dbloanapplications}
     port: ${DB_PORT:5432}
     database: ${DB_NAME:postgres}
     schema: ${DB_SCHEMA:credi_ya}
     username: ${DB_USER:admin}
-    password: ${DB_PASSWORD:db_loanapplications}
+    password: ${DB_PASSWORD:dbloanapplications}
   restconsumer:
     timeout: 5000
-    url: ${AUTHENTICATION_URL:http://ms_authentication:8080}
+    url: ${AUTHENTICATION_URL:http://msauthentication:8080}
   sqs:
     decisions:
       region: us-east-2
