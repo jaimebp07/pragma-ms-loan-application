@@ -39,7 +39,7 @@ adapters:
     database: "postgres"
     schema: "credi_ya"
     username: "admin"
-    password: "db_loanapplications"
+    password: "dbloanapplications"
   restconsumer:
     timeout: 5000
     url: "http://localhost:8080"
