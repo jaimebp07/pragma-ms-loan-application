@@ -53,7 +53,7 @@ adapters:
       queueurl: https://sqs.us-east-2.amazonaws.com/484558640369/loan-capacity-check
       #endpoint: http://localhost:4566
     capacity-result:
-      queueurl: "https://sqs.us-east-2.amazonaws.com/484558640369/loan-capacity-result-queue"
+      queueurl: ${SQS_CAPACITY_RESULT_QUEUE_URL}
       region: "us-east-2"
   
 logging:
